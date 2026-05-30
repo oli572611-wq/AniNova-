@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AniNova — Watch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#070B14;--bg2:#0D1221;--bg3:#111827;--primary:#00BFFF;--secondary:#7A5CFF;--text:#fff;--muted:#8892A4;--border:#1A2035;--radius:8px;--hh:58px}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;background:none;color:inherit;font-family:inherit}
+    img{display:block;max-width:100%}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--primary);border-radius:2px}
+
+    header{position:sticky;top:0;z-index:100;height:var(--hh);background:rgba(7,11,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+    .logo{font-family:'Oxanium',sans-serif;font-size:1.35rem;font-weight:800;display:flex;align-items:center;gap:6px}
+    .logo-icon{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center}
+    .logo-icon svg{width:16px;height:16px;fill:#000}
+    .logo span{color:var(--primary)}
+    .header-right{display:flex;align-items:center;gap:4px}
+    .icon-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .2s,background .2s}
+    .icon-btn:hover{color:var(--primary);background:rgba(0,191,255,.1)}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+    .overlay.open{opacity:1;pointer-events:all}
+    .drawer{position:fixed;top:0;right:-290px;width:280px;height:100dvh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto}
+    .drawer.open{right:0}
+    .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;border-bottom:1px solid var(--border)}
+    .drawer-logo{font-family:'Oxanium',sans-serif;font-size:1.2rem;font-weight:800}.drawer-logo span{color:var(--primary)}
+    .drawer-nav{padding:8px 0}
+    .drawer-nav a{display:flex;align-items:center;gap:12px;padding:11px 16px;font-size:.9rem;font-weight:500;color:var(--muted);border-left:3px solid transparent;transition:color .2s,background .2s,border-color .2s}
+    .drawer-nav a:hover{color:var(--primary);background:rgba(0,191,255,.07);border-left-color:var(--primary)}
+    .nav-icon{font-size:1rem;width:20px;text-align:center}
+    .drawer-div{height:1px;background:var(--border);margin:6px 16px}
+
+    /* PLAYER */
+    .player-wrap{width:100%;background:#000;position:relative}
+    .player-wrap iframe{width:100%;aspect-ratio:16/9;display:block;border:none}
+    .player-loader{position:absolute;inset:0;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+    .player-loader.hide{display:none}
+    .spin{width:36px;height:36px;border:3px solid rgba(0,191,255,.2);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loader-text{font-size:.8rem;color:var(--muted)}
+
+    /* WATCH BODY */
+    .watch-body{padding:14px 16px}
+
+    /* EP TITLE */
+    .ep-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .ep-title{font-family:'Oxanium',sans-serif;font-size:clamp(.9rem,3.5vw,1.15rem);font-weight:700;line-height:1.3}
+    .ep-num-badge{background:var(--primary);color:#000;font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:3px}
+
+    /* ANIME INFO ROW */
+    .anime-info-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .anime-thumb{width:36px;height:50px;border-radius:4px;object-fit:cover;background:var(--bg3);flex-shrink:0}
+    .anime-name{font-size:.82rem;font-weight:600;color:var(--muted)}
+    .anime-name a{color:var(--primary)}
+    .anime-season{font-size:.72rem;color:var(--muted);margin-top:2px}
+
+    /* NAV BTNS */
+    .nav-row{display:flex;gap:8px;margin-bottom:16px}
+    .btn-nav{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--radius);font-size:.82rem;font-weight:600;border:1px solid var(--border);background:var(--bg2);color:var(--text);transition:all .2s;flex:1;justify-content:center}
+    .btn-nav:hover{border-color:var(--primary);color:var(--primary);background:rgba(0,191,255,.06)}
+    .btn-nav:disabled{opacity:.3;cursor:not-allowed}
+
+    /* SERVERS */
+    .servers-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+    .servers-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+    .server-btn{padding:7px 14px;border-radius:var(--radius);font-size:.78rem;font-weight:700;border:2px solid;background:transparent;cursor:pointer;transition:all .2s;font-family:inherit;letter-spacing:.5px}
+    .server-btn:hover,.server-btn.active{color:#000!important}
+    .server-btn[data-name="PLAY"]    {border-color:#10b981;color:#10b981}
+    .server-btn[data-name="PLAY"].active,.server-btn[data-name="PLAY"]:hover{background:#10b981}
+    .server-btn[data-name="VOID"]    {border-color:#8b5cf6;color:#8b5cf6}
+    .server-btn[data-name="VOID"].active,.server-btn[data-name="VOID"]:hover{background:#8b5cf6}
+    .server-btn[data-name="STREAM"]  {border-color:#eab308;color:#eab308}
+    .server-btn[data-name="STREAM"].active,.server-btn[data-name="STREAM"]:hover{background:#eab308}
+    .server-btn[data-name="NEXUS"]   {border-color:#3b82f6;color:#3b82f6}
+    .server-btn[data-name="NEXUS"].active,.server-btn[data-name="NEXUS"]:hover{background:#3b82f6}
+    .server-btn[data-name="LUNA"]    {border-color:#ec4899;color:#ec4899}
+    .server-btn[data-name="LUNA"].active,.server-btn[data-name="LUNA"]:hover{background:#ec4899}
+
+    /* REPORT */
+    .report-btn{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted);padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg2);transition:color .2s,border-color .2s;margin-bottom:18px}
+    .report-btn:hover{color:var(--error,#FF4D6D);border-color:rgba(255,77,109,.4)}
+
+    .divider{height:1px;background:var(--border);margin:16px 0}
+
+    /* SEASON TABS */
+    .section-label{font-family:'Oxanium',sans-serif;font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+    .season-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px;padding-bottom:2px}
+    .season-tabs::-webkit-scrollbar{display:none}
+    .season-tab{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:700;background:var(--bg2);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s}
+    .season-tab.active{background:var(--primary);color:#000;border-color:var(--primary)}
+
+    /* EP GRID */
+    .ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(50px,1fr));gap:6px;margin-bottom:20px}
+    .ep-box{aspect-ratio:1;border-radius:var(--radius);background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;color:var(--text)}
+    .ep-box:hover{border-color:var(--primary);color:var(--primary);background:rgba(0,191,255,.07)}
+    .ep-box.active{background:var(--primary);color:#000;border-color:var(--primary)}
+
+    /* RECOMMENDED */
+    .rec-row{display:flex;gap:9px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+    .rec-row::-webkit-scrollbar{display:none}
+    .rec-card{flex:0 0 calc(33.33% - 6px);scroll-snap-align:start;text-decoration:none}
+    .rec-img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:var(--radius);background:var(--bg3);transition:transform .28s}
+    .rec-card:hover .rec-img{transform:scale(1.04)}
+    .rec-name{font-size:.72rem;font-weight:600;color:var(--muted);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+    footer{margin-top:36px;padding:20px 16px 32px;border-top:1px solid var(--border)}
+    .footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin-bottom:14px}
+    .footer-links a{font-size:.78rem;color:var(--muted);transition:color .2s}
+    .footer-links a:hover{color:var(--primary)}
+    .footer-copy{text-align:center;font-size:.72rem;color:var(--muted);opacity:.5}
+    .footer-copy strong{font-family:'Oxanium',sans-serif;font-weight:800;color:var(--primary);opacity:1}
+
+    @media(min-width:640px){.watch-body{padding:18px 24px}}
+    @media(min-width:1024px){
+      header{padding:0 48px}
+      .watch-body{padding:22px 48px;max-width:1100px;margin:0 auto}
+      .ep-grid{grid-template-columns:repeat(auto-fill,minmax(54px,1fr))}
+      .rec-card{flex:0 0 calc(16.66% - 8px)}
+      footer{max-width:1100px;margin:0 auto;padding:24px 48px 48px}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    Ani<span>Nova</span>
+  </a>
+  <div class="header-right">
+    <a href="search.html" class="icon-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </a>
+    <button class="icon-btn" id="menuBtn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span class="drawer-logo">Ani<span>Nova</span></span>
+    <button class="icon-btn" id="closeBtn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span>Home</a>
+    <a href="search.html"><span class="nav-icon">🔍</span>Search</a>
+    <div class="drawer-div"></div>
+    <a href="all-series.html"><span class="nav-icon">📺</span>All Series</a>
+    <a href="all-movies.html"><span class="nav-icon">🎬</span>All Movies</a>
+    <div class="drawer-div"></div>
+    <a href="genre.html"><span class="nav-icon">🎭</span>Genres</a>
+    <a href="language.html"><span class="nav-icon">🌐</span>Language</a>
+    <div class="drawer-div"></div>
+    <a href="contact.html"><span class="nav-icon">📧</span>Contact Us</a>
+    <a href="dmca.html"><span class="nav-icon">🛡️</span>DMCA</a>
+  </div>
+</nav>
+
+<!-- PLAYER -->
+<div class="player-wrap">
+  <div class="player-loader" id="playerLoader">
+    <div class="spin"></div>
+    <span class="loader-text">Loading player...</span>
+  </div>
+  <iframe id="playerFrame" src="" allowfullscreen allow="autoplay; fullscreen" scrolling="no"></iframe>
+</div>
+
+<!-- WATCH BODY -->
+<div class="watch-body">
+
+  <!-- EP TITLE -->
+  <div class="ep-title-row">
+    <div class="ep-title" id="epTitle">Loading...</div>
+    <span class="ep-num-badge" id="epBadge">EP 1</span>
+  </div>
+
+  <!-- ANIME INFO -->
+  <div class="anime-info-row">
+    <img class="anime-thumb" id="animethumb" src="" alt="">
+    <div>
+      <div class="anime-name"><a id="animeLink" href="#">Loading...</a></div>
+      <div class="anime-season" id="seasonLabel"></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-row">
+    <button class="btn-nav" id="prevBtn" disabled>
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      Previous
+    </button>
+    <button class="btn-nav" id="nextBtn" disabled>
+      Next
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+
+  <!-- SERVERS -->
+  <div class="servers-label">Select Server</div>
+  <div class="servers-row" id="serversRow">
+    <span style="font-size:.8rem;color:var(--muted)">Loading servers...</span>
+  </div>
+
+  <!-- REPORT -->
+  <button class="report-btn" id="reportBtn">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Report Issue
+  </button>
+
+  <div class="divider"></div>
+
+  <!-- EPISODE LIST -->
+  <div class="section-label">Episodes</div>
+  <div class="season-tabs" id="seasonTabs"></div>
+  <div class="ep-grid" id="epGrid"></div>
+
+  <div class="divider"></div>
+
+  <!-- RECOMMENDED -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div class="section-label" style="margin-bottom:0">You May Also Like</div>
+    <a href="all-series.html" style="font-size:.75rem;color:var(--primary);opacity:.75">See All →</a>
+  </div>
+  <div class="rec-row" id="recRow"></div>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="all-series.html">All Series</a>
+    <a href="all-movies.html">All Movies</a>
+    <a href="genre.html">Genres</a>
+    <a href="language.html">Language</a>
+    <a href="contact.html">Contact Us</a>
+    <a href="dmca.html">DMCA</a>
+  </div>
+  <p class="footer-copy"><strong>AniNova</strong> © 2026 · Watch Anime Online Free</p>
+</footer>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, doc, getDoc, getDocs, query, where, limit, orderBy }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey:"AIzaSyDmg1xw9VXhszxm1IKmBKh24yQDDtSKoQ8",
+    authDomain:"aninova-c1d69.firebaseapp.com",
+    projectId:"aninova-c1d69",
+    storageBucket:"aninova-c1d69.firebasestorage.app",
+    messagingSenderId:"1089254256286",
+    appId:"1:1089254256286:web:7755ed1f346e0a0921958f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  const params  = new URLSearchParams(location.search);
+  const animeId = params.get('id');
+  const slug    = params.get('slug') || '';
+  let   season  = Number(params.get('s')) || 1;
+  let   epNum   = Number(params.get('ep')) || 1;
+
+  if (!animeId) { window.location.href='index.html'; }
+
+  function toSlug(str){ return str.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+
+  let allEpisodes = [];
+  let animeData   = null;
+  let currentServer = localStorage.getItem('aninova_server') || 'PLAY';
+
+  /* ── LOAD ALL ── */
+  async function init() {
+    try {
+      // Anime data
+      const aSnap = await getDoc(doc(db,'anime',animeId));
+      if (!aSnap.exists()) { window.location.href='index.html'; return; }
+      animeData = { id:aSnap.id, ...aSnap.data() };
+
+      document.title = `${animeData.title} — AniNova`;
+
+      // Thumb & link
+      const thumb = document.getElementById('animethumb');
+      thumb.src = animeData.cover_url || '';
+      thumb.onerror = () => thumb.style.display='none';
+      const aLink = document.getElementById('animeLink');
+      aLink.textContent = animeData.title || '';
+      aLink.href = `series.html?id=${animeId}&slug=${slug}`;
+
+      // Load episodes
+      const eSnap = await getDocs(query(collection(db,'episodes'), where('anime_fb_id','==',animeId)));
+      allEpisodes = eSnap.docs.map(d => ({id:d.id,...d.data()})).sort((a,b) => {
+        if (a.season_num !== b.season_num) return a.season_num - b.season_num;
+        return a.episode_num - b.episode_num;
+      });
+
+      // Season tabs
+      const seasons = [...new Set(allEpisodes.map(e => e.season_num))].sort((a,b)=>a-b);
+      document.getElementById('seasonTabs').innerHTML = seasons.map(s =>
+        `<button class="season-tab${s===season?' active':''}" data-s="${s}">S${s}</button>`
+      ).join('');
+      document.querySelectorAll('.season-tab').forEach(t => {
+        t.addEventListener('click', () => {
+          document.querySelectorAll('.season-tab').forEach(x => x.classList.remove('active'));
+          t.classList.add('active');
+          renderEpGrid(Number(t.dataset.s));
+        });
+      });
+      renderEpGrid(season);
+
+      // Play current episode
+      await loadEpisode(season, epNum);
+
+      // Recommended
+      loadRecommended();
+
+    } catch(e){ console.error(e); }
+  }
+
+  /* ── LOAD EPISODE ── */
+  async function loadEpisode(s, ep) {
+    season = s; epNum = ep;
+    const epData = allEpisodes.find(e => e.season_num===s && e.episode_num===ep);
+
+    document.getElementById('epBadge').textContent   = `S${s} EP${ep}`;
+    document.getElementById('seasonLabel').textContent = `Season ${s} · Episode ${ep}`;
+    document.getElementById('epTitle').textContent   = epData?.episode_title || `${animeData?.title || ''} — S${s} E${ep}`;
+
+    // URL update
+    history.replaceState(null,'',`watch.html?id=${animeId}&slug=${slug}&s=${s}&ep=${ep}`);
+
+    // Nav buttons
+    const allInSeason = allEpisodes.filter(e => e.season_num===s).sort((a,b)=>a.episode_num-b.episode_num);
+    const idx = allInSeason.findIndex(e => e.episode_num===ep);
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    prevBtn.disabled = idx <= 0;
+    nextBtn.disabled = idx >= allInSeason.length-1;
+    prevBtn.onclick = () => { if(idx>0) loadEpisode(s, allInSeason[idx-1].episode_num); };
+    nextBtn.onclick = () => { if(idx<allInSeason.length-1) loadEpisode(s, allInSeason[idx+1].episode_num); };
+
+    // Servers
+    if (epData?.servers?.length) {
+      renderServers(epData.servers, currentServer);
+    } else {
+      document.getElementById('serversRow').innerHTML = '<span style="font-size:.8rem;color:var(--muted)">No servers available.</span>';
+      document.getElementById('playerLoader').classList.add('hide');
+    }
+
+    // Highlight ep box
+    document.querySelectorAll('.ep-box').forEach(b => {
+      b.classList.toggle('active', Number(b.dataset.ep)===ep && Number(b.dataset.s)===s);
+    });
+
+    // Save to history
+    const hist = JSON.parse(localStorage.getItem('aninova_history')||'{}');
+    hist[animeId] = { s, ep, slug, title: animeData?.title||'', cover: animeData?.cover_url||'', ts: Date.now() };
+    localStorage.setItem('aninova_history', JSON.stringify(hist));
+  }
+
+  /* ── RENDER SERVERS ── */
+  function renderServers(servers, active) {
+    const row = document.getElementById('serversRow');
+    row.innerHTML = servers.map(sv =>
+      `<button class="server-btn${sv.name===active?' active':''}" data-name="${sv.name}" data-url="${sv.embed_url||''}">
+        ${sv.name}
+      </button>`
+    ).join('');
+    row.querySelectorAll('.server-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        row.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentServer = btn.dataset.name;
+        localStorage.setItem('aninova_server', currentServer);
+        loadPlayer(btn.dataset.url);
+      });
+    });
+    // Auto-load preferred server
+    const preferred = row.querySelector(`[data-name="${active}"]`) || row.querySelector('.server-btn');
+    if (preferred) {
+      preferred.classList.add('active');
+      loadPlayer(preferred.dataset.url);
+    }
+  }
+
+  /* ── LOAD PLAYER ── */
+  function loadPlayer(url) {
+    const loader = document.getElementById('playerLoader');
+    const frame  = document.getElementById('playerFrame');
+    if (!url) { loader.classList.remove('hide'); loader.querySelector('.loader-text').textContent='No server URL.'; return; }
+    loader.classList.remove('hide');
+    frame.src = '';
+    setTimeout(() => {
+      frame.src = url;
+      frame.onload = () => loader.classList.add('hide');
+      setTimeout(() => loader.classList.add('hide'), 8000); // fallback
+    }, 200);
+  }
+
+  /* ── EP GRID ── */
+  function renderEpGrid(s) {
+    const eps = allEpisodes.filter(e => e.season_num===s).sort((a,b)=>a.episode_num-b.episode_num);
+    document.getElementById('epGrid').innerHTML = eps.map(e =>
+      `<a class="ep-box${e.season_num===season&&e.episode_num===epNum?' active':''}"
+          href="#" data-ep="${e.episode_num}" data-s="${e.season_num}"
+          title="S${e.season_num} E${e.episode_num}${e.episode_title?' — '+e.episode_title:''}">
+        ${e.episode_num}
+      </a>`
+    ).join('');
+    document.querySelectorAll('.ep-box').forEach(b => {
+      b.addEventListener('click', ev => {
+        ev.preventDefault();
+        loadEpisode(Number(b.dataset.s), Number(b.dataset.ep));
+      });
+    });
+  }
+
+  /* ── RECOMMENDED ── */
+  async function loadRecommended() {
+    try {
+      const snap = await getDocs(query(collection(db,'anime'), where('type','==','series'), limit(10)));
+      const items = snap.docs.map(d=>({id:d.id,...d.data()})).filter(a=>a.id!==animeId).slice(0,8);
+      document.getElementById('recRow').innerHTML = items.map(a => {
+        const s = toSlug(a.title||'');
+        return `<a class="rec-card" href="series.html?id=${a.id}&slug=${s}">
+          <img class="rec-img" src="${a.cover_url||''}" alt="${a.title}" loading="lazy" onerror="this.src='https://placehold.co/140x210/0D1221/8892A4?text=?'">
+          <p class="rec-name">${a.title||''}</p>
+        </a>`;
+      }).join('');
+    } catch(e){ console.error(e); }
+  }
+
+  /* ── REPORT ── */
+  document.getElementById('reportBtn').addEventListener('click', () => {
+    const msg = `Report — ${animeData?.title||''} S${season} E${epNum}`;
+    alert(`Thank you for reporting!\n\n${msg}\n\nWe will fix this issue soon.`);
+  });
+
+  /* ── DRAWER ── */
+  const drawer  = document.getElementById('drawer');
+  const overlay = document.getElementById('overlay');
+  document.getElementById('menuBtn').addEventListener('click', ()=>{ drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; });
+  document.getElementById('closeBtn').addEventListener('click', ()=>{ drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; });
+  overlay.addEventListener('click', ()=>{ drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; });
+
+  init();
+</script>
+</body>
+</html>

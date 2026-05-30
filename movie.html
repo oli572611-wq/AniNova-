@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AniNova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#070B14;--bg2:#0D1221;--bg3:#111827;--primary:#00BFFF;--secondary:#7A5CFF;--text:#fff;--muted:#8892A4;--border:#1A2035;--radius:8px;--hh:58px}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;background:none;color:inherit;font-family:inherit}
+    img{display:block;max-width:100%}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--primary);border-radius:2px}
+
+    header{position:sticky;top:0;z-index:100;height:var(--hh);background:rgba(7,11,20,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+    .logo{font-family:'Oxanium',sans-serif;font-size:1.35rem;font-weight:800;display:flex;align-items:center;gap:6px}
+    .logo-icon{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center}
+    .logo-icon svg{width:16px;height:16px;fill:#000}
+    .logo span{color:var(--primary)}
+    .header-right{display:flex;align-items:center;gap:4px}
+    .icon-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .2s,background .2s}
+    .icon-btn:hover{color:var(--primary);background:rgba(0,191,255,.1)}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+    .overlay.open{opacity:1;pointer-events:all}
+    .drawer{position:fixed;top:0;right:-290px;width:280px;height:100dvh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto}
+    .drawer.open{right:0}
+    .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;border-bottom:1px solid var(--border)}
+    .drawer-logo{font-family:'Oxanium',sans-serif;font-size:1.2rem;font-weight:800}.drawer-logo span{color:var(--primary)}
+    .drawer-nav{padding:8px 0}
+    .drawer-nav a{display:flex;align-items:center;gap:12px;padding:11px 16px;font-size:.9rem;font-weight:500;color:var(--muted);border-left:3px solid transparent;transition:color .2s,background .2s,border-color .2s}
+    .drawer-nav a:hover{color:var(--primary);background:rgba(0,191,255,.07);border-left-color:var(--primary)}
+    .nav-icon{font-size:1rem;width:20px;text-align:center}
+    .drawer-div{height:1px;background:var(--border);margin:6px 16px}
+
+    /* BANNER */
+    .banner{position:relative;width:100%;height:65vw;max-height:480px;min-height:240px;overflow:hidden;background:var(--bg2)}
+    .banner-img{width:100%;height:100%;object-fit:cover;object-position:center top}
+    .banner-grad{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,11,20,.98) 0%,rgba(7,11,20,.5) 60%,rgba(7,11,20,.1) 100%),linear-gradient(0deg,rgba(7,11,20,1) 0%,rgba(7,11,20,0) 50%)}
+    .banner-back{position:absolute;top:14px;left:14px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .2s}
+    .banner-back:hover{color:var(--text)}
+    .movie-badge{position:absolute;top:14px;right:14px;background:var(--secondary);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:1px;text-transform:uppercase}
+
+    /* INFO */
+    .info-wrap{position:relative;margin-top:-60px;padding:0 16px 0;display:flex;gap:14px;align-items:flex-end}
+    .cover-poster{width:90px;height:130px;border-radius:var(--radius);object-fit:cover;background:var(--bg3);border:2px solid var(--border);flex-shrink:0;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+    .info-right{flex:1;min-width:0;padding-bottom:4px}
+    .info-title{font-family:'Oxanium',sans-serif;font-size:clamp(1rem,4.5vw,1.5rem);font-weight:800;line-height:1.2;margin-bottom:3px}
+    .info-orig{font-size:.72rem;color:var(--muted);margin-bottom:6px}
+    .badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+    .badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.3px}
+    .badge-blue{background:rgba(0,191,255,.15);color:var(--primary)}
+    .badge-purple{background:rgba(122,92,255,.15);color:var(--secondary)}
+    .badge-green{background:rgba(16,185,129,.15);color:#10B981}
+    .badge-yellow{background:rgba(245,158,11,.15);color:#F59E0B}
+    .badge-gray{background:rgba(255,255,255,.08);color:var(--muted)}
+
+    /* DETAIL BODY */
+    .detail-body{padding:16px}
+    .action-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+    .btn-watch{display:inline-flex;align-items:center;gap:7px;background:var(--primary);color:#000;font-weight:700;font-size:.85rem;padding:10px 22px;border-radius:var(--radius);transition:opacity .2s,transform .2s}
+    .btn-watch:hover{opacity:.88;transform:translateY(-1px)}
+    .btn-trailer{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);color:var(--text);font-weight:600;font-size:.85rem;padding:10px 18px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.12);transition:background .2s}
+    .btn-trailer:hover{background:rgba(255,255,255,.14)}
+
+    .section-label{font-family:'Oxanium',sans-serif;font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+    .overview-text{font-size:.85rem;line-height:1.65;color:rgba(255,255,255,.75);margin-bottom:18px}
+    .overview-text.clamped{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+    .read-more{font-size:.78rem;color:var(--primary);cursor:pointer;margin-top:-12px;margin-bottom:18px;display:none}
+    .genres-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
+    .genre-tag{font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);color:var(--muted);transition:color .2s,border-color .2s,background .2s}
+    .genre-tag:hover{color:var(--primary);border-color:var(--primary);background:rgba(0,191,255,.07)}
+    .divider{height:1px;background:var(--border);margin:18px 0}
+
+    /* MOVIE INFO TABLE */
+    .info-table{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+    .info-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px}
+    .info-row-label{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+    .info-row-val{font-size:.82rem;font-weight:600;color:var(--text)}
+
+    /* RECOMMENDED */
+    .rec-row{display:flex;gap:9px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+    .rec-row::-webkit-scrollbar{display:none}
+    .rec-card{flex:0 0 calc(33.33% - 6px);scroll-snap-align:start;text-decoration:none}
+    .rec-img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:var(--radius);background:var(--bg3);transition:transform .28s,box-shadow .28s}
+    .rec-card:hover .rec-img{transform:scale(1.04);box-shadow:0 6px 20px rgba(122,92,255,.2)}
+    .rec-name{font-size:.72rem;font-weight:600;color:var(--muted);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+    footer{margin-top:36px;padding:20px 16px 32px;border-top:1px solid var(--border)}
+    .footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin-bottom:14px}
+    .footer-links a{font-size:.78rem;color:var(--muted);transition:color .2s}
+    .footer-links a:hover{color:var(--primary)}
+    .footer-copy{text-align:center;font-size:.72rem;color:var(--muted);opacity:.5}
+    .footer-copy strong{font-family:'Oxanium',sans-serif;font-weight:800;color:var(--primary);opacity:1}
+
+    @media(min-width:640px){
+      .banner{height:50vw}.info-wrap{padding:0 24px}
+      .cover-poster{width:110px;height:160px}.detail-body{padding:20px 24px}
+    }
+    @media(min-width:1024px){
+      header{padding:0 48px}.banner{height:42vw;max-height:520px}
+      .info-wrap{padding:0 48px;max-width:1100px;margin:0 auto;margin-top:-80px}
+      .cover-poster{width:130px;height:190px}
+      .detail-body{padding:24px 48px;max-width:1100px;margin:0 auto}
+      .info-table{grid-template-columns:repeat(4,1fr)}
+      .rec-card{flex:0 0 calc(16.66% - 8px)}
+      footer{max-width:1100px;margin:0 auto;padding:24px 48px 48px}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    Ani<span>Nova</span>
+  </a>
+  <div class="header-right">
+    <a href="search.html" class="icon-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </a>
+    <button class="icon-btn" id="menuBtn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span class="drawer-logo">Ani<span>Nova</span></span>
+    <button class="icon-btn" id="closeBtn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span>Home</a>
+    <a href="search.html"><span class="nav-icon">🔍</span>Search</a>
+    <div class="drawer-div"></div>
+    <a href="all-series.html"><span class="nav-icon">📺</span>All Series</a>
+    <a href="all-movies.html"><span class="nav-icon">🎬</span>All Movies</a>
+    <div class="drawer-div"></div>
+    <a href="genre.html"><span class="nav-icon">🎭</span>Genres</a>
+    <a href="language.html"><span class="nav-icon">🌐</span>Language</a>
+    <div class="drawer-div"></div>
+    <a href="contact.html"><span class="nav-icon">📧</span>Contact Us</a>
+    <a href="dmca.html"><span class="nav-icon">🛡️</span>DMCA</a>
+  </div>
+</nav>
+
+<div class="banner">
+  <img class="banner-img" id="bannerImg" src="" alt="">
+  <div class="banner-grad"></div>
+  <a class="banner-back" href="javascript:history.back()">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+  </a>
+  <span class="movie-badge">Movie</span>
+</div>
+
+<div class="info-wrap">
+  <img class="cover-poster" id="coverImg" src="" alt="">
+  <div class="info-right">
+    <h1 class="info-title" id="infoTitle">Loading...</h1>
+    <p class="info-orig" id="infoOrig"></p>
+    <div class="badges" id="infoBadges"></div>
+  </div>
+</div>
+
+<div class="detail-body">
+
+  <div class="action-row">
+    <a class="btn-watch" id="watchBtn" href="#">
+      <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      Watch Movie
+    </a>
+    <a class="btn-trailer" id="trailerBtn" href="#" target="_blank" style="display:none">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Trailer
+    </a>
+  </div>
+
+  <div class="section-label">Story Line</div>
+  <div class="overview-text clamped" id="overviewText">Loading...</div>
+  <div class="read-more" id="readMore">Read more ▾</div>
+
+  <div class="section-label">Genres</div>
+  <div class="genres-row" id="genresRow"></div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Movie Info</div>
+  <div class="info-table" id="infoTable"></div>
+
+  <div class="divider"></div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div class="section-label" style="margin-bottom:0">More Movies</div>
+    <a href="all-movies.html" style="font-size:.75rem;color:var(--secondary);opacity:.75">See All →</a>
+  </div>
+  <div class="rec-row" id="recRow"></div>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="all-series.html">All Series</a>
+    <a href="all-movies.html">All Movies</a>
+    <a href="genre.html">Genres</a>
+    <a href="language.html">Language</a>
+    <a href="contact.html">Contact Us</a>
+    <a href="dmca.html">DMCA</a>
+  </div>
+  <p class="footer-copy"><strong>AniNova</strong> © 2026 · Watch Anime Online Free</p>
+</footer>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, doc, getDoc, getDocs, query, where, limit }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey:"AIzaSyDmg1xw9VXhszxm1IKmBKh24yQDDtSKoQ8",
+    authDomain:"aninova-c1d69.firebaseapp.com",
+    projectId:"aninova-c1d69",
+    storageBucket:"aninova-c1d69.firebasestorage.app",
+    messagingSenderId:"1089254256286",
+    appId:"1:1089254256286:web:7755ed1f346e0a0921958f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  const params  = new URLSearchParams(location.search);
+  const animeId = params.get('id');
+  const slug    = params.get('slug') || '';
+  if (!animeId) { window.location.href = 'index.html'; }
+
+  function toSlug(str){ return str.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+
+  async function loadMovie() {
+    try {
+      const snap = await getDoc(doc(db,'anime',animeId));
+      if (!snap.exists()) { window.location.href='index.html'; return; }
+      const anime = { id:snap.id, ...snap.data() };
+
+      document.title = `${anime.title} — AniNova`;
+
+      document.getElementById('bannerImg').src = anime.banner_url || anime.cover_url || '';
+      document.getElementById('bannerImg').alt = anime.title;
+
+      const cImg = document.getElementById('coverImg');
+      cImg.src = anime.cover_url || '';
+      cImg.onerror = () => cImg.style.display = 'none';
+
+      document.getElementById('infoTitle').textContent = anime.title || '';
+      if (anime.original_title) document.getElementById('infoOrig').textContent = anime.original_title;
+
+      const badges = [
+        anime.rating    ? [`⭐ ${anime.rating}`, 'badge-yellow'] : null,
+        anime.quality   ? [anime.quality, 'badge-gray']    : null,
+        anime.audio_lang? [anime.audio_lang, 'badge-purple']: null,
+        anime.status    ? [anime.status, 'badge-green']    : null,
+        anime.aired_from? [anime.aired_from.split('-')[0], 'badge-gray'] : null,
+      ].filter(Boolean);
+      document.getElementById('infoBadges').innerHTML = badges.map(([t,c]) =>
+        `<span class="badge ${c}">${t}</span>`).join('');
+
+      // Watch button
+      document.getElementById('watchBtn').href = `watch-movie.html?id=${anime.id}&slug=${toSlug(anime.title||'')}`;
+
+      // Trailer
+      if (anime.trailer_link) {
+        const tb = document.getElementById('trailerBtn');
+        tb.href = anime.trailer_link;
+        tb.style.display = 'inline-flex';
+      }
+
+      // Overview
+      const ov = document.getElementById('overviewText');
+      ov.textContent = anime.overview || 'No description available.';
+      if ((anime.overview||'').length > 200) {
+        const rm = document.getElementById('readMore');
+        rm.style.display = 'block';
+        rm.addEventListener('click', () => {
+          ov.classList.toggle('clamped');
+          rm.textContent = ov.classList.contains('clamped') ? 'Read more ▾' : 'Show less ▴';
+        });
+      }
+
+      // Genres
+      const genres = Array.isArray(anime.genres) ? anime.genres : (anime.genres||'').split(',').map(g=>g.trim()).filter(Boolean);
+      document.getElementById('genresRow').innerHTML = genres.map(g =>
+        `<a href="genre.html?g=${encodeURIComponent(g)}" class="genre-tag">${g}</a>`).join('');
+
+      // Info table
+      const rows = [
+        ['Type','Movie'],
+        ['Language', anime.audio_lang||'—'],
+        ['Quality', anime.quality||'—'],
+        ['Release', anime.aired_from||'—'],
+        ['Rating', anime.rating ? `⭐ ${anime.rating}` : '—'],
+        ['Status', anime.status||'—'],
+      ];
+      document.getElementById('infoTable').innerHTML = rows.map(([l,v]) =>
+        `<div class="info-row"><div class="info-row-label">${l}</div><div class="info-row-val">${v}</div></div>`
+      ).join('');
+
+      // Recommended
+      const q    = query(collection(db,'anime'), where('type','==','movie'), limit(10));
+      const rSnap = await getDocs(q);
+      const items = rSnap.docs.map(d => ({id:d.id,...d.data()})).filter(a => a.id !== anime.id).slice(0,8);
+      document.getElementById('recRow').innerHTML = items.map(a => {
+        const s = toSlug(a.title||'');
+        return `<a class="rec-card" href="movie.html?id=${a.id}&slug=${s}">
+          <img class="rec-img" src="${a.cover_url||''}" alt="${a.title}" loading="lazy" onerror="this.src='https://placehold.co/140x210/0D1221/8892A4?text=?'">
+          <p class="rec-name">${a.title||''}</p>
+        </a>`;
+      }).join('');
+
+    } catch(e){ console.error(e); }
+  }
+
+  const drawer  = document.getElementById('drawer');
+  const overlay = document.getElementById('overlay');
+  document.getElementById('menuBtn').addEventListener('click', () => { drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; });
+  document.getElementById('closeBtn').addEventListener('click', () => { drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; });
+  overlay.addEventListener('click', () => { drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; });
+
+  loadMovie();
+</script>
+</body>
+</html>
