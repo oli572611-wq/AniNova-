@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DMCA — AniNova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#070B14;--bg2:#0D1221;--bg3:#111827;--primary:#00BFFF;--secondary:#7A5CFF;--text:#fff;--muted:#8892A4;--border:#1A2035;--radius:8px;--hh:58px}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;background:none;color:inherit;font-family:inherit}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--primary);border-radius:2px}
+    header{position:sticky;top:0;z-index:100;height:var(--hh);background:rgba(7,11,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+    .logo{font-family:'Oxanium',sans-serif;font-size:1.35rem;font-weight:800;display:flex;align-items:center;gap:6px}
+    .logo-icon{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center}
+    .logo-icon svg{width:16px;height:16px;fill:#000}
+    .logo span{color:var(--primary)}
+    .header-right{display:flex;align-items:center;gap:4px}
+    .icon-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .2s,background .2s}
+    .icon-btn:hover{color:var(--primary);background:rgba(0,191,255,.1)}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+    .overlay.open{opacity:1;pointer-events:all}
+    .drawer{position:fixed;top:0;right:-290px;width:280px;height:100dvh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto}
+    .drawer.open{right:0}
+    .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;border-bottom:1px solid var(--border)}
+    .drawer-logo{font-family:'Oxanium',sans-serif;font-size:1.2rem;font-weight:800}.drawer-logo span{color:var(--primary)}
+    .drawer-nav{padding:8px 0}
+    .drawer-nav a{display:flex;align-items:center;gap:12px;padding:11px 16px;font-size:.9rem;font-weight:500;color:var(--muted);border-left:3px solid transparent;transition:color .2s,background .2s,border-color .2s}
+    .drawer-nav a:hover,.drawer-nav a.active{color:var(--primary);background:rgba(0,191,255,.07);border-left-color:var(--primary)}
+    .nav-icon{font-size:1rem;width:20px;text-align:center}
+    .drawer-div{height:1px;background:var(--border);margin:6px 16px}
+
+    .page-wrap{padding:28px 16px;max-width:680px;margin:0 auto}
+    .page-icon{font-size:2.5rem;margin-bottom:10px;text-align:center}
+    .page-title{font-family:'Oxanium',sans-serif;font-size:1.3rem;font-weight:800;text-align:center;margin-bottom:6px}
+    .page-sub{font-size:.85rem;color:var(--muted);text-align:center;margin-bottom:28px;line-height:1.6}
+
+    .dmca-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+    .dmca-section h2{font-family:'Oxanium',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .dmca-section p{font-size:.84rem;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:10px}
+    .dmca-section p:last-child{margin-bottom:0}
+    .dmca-section ul{padding-left:18px;margin-top:6px}
+    .dmca-section ul li{font-size:.84rem;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:4px}
+
+    .notice-box{background:rgba(0,191,255,.06);border:1px solid rgba(0,191,255,.2);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;font-size:.82rem;color:var(--primary);line-height:1.6}
+
+    .btn-contact{display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:#000;font-weight:700;font-size:.88rem;padding:11px 24px;border-radius:var(--radius);margin-top:8px;transition:opacity .2s}
+    .btn-contact:hover{opacity:.88}
+
+    footer{margin-top:40px;padding:20px 16px 32px;border-top:1px solid var(--border)}
+    .footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin-bottom:14px}
+    .footer-links a{font-size:.78rem;color:var(--muted);transition:color .2s}
+    .footer-links a:hover{color:var(--primary)}
+    .footer-copy{text-align:center;font-size:.72rem;color:var(--muted);opacity:.5}
+    .footer-copy strong{font-family:'Oxanium',sans-serif;font-weight:800;color:var(--primary);opacity:1}
+    @media(min-width:1024px){header{padding:0 48px}footer{padding:24px 48px 48px;max-width:1100px;margin:0 auto}}
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    Ani<span>Nova</span>
+  </a>
+  <div class="header-right">
+    <a href="search.html" class="icon-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></a>
+    <button class="icon-btn" id="menuBtn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  </div>
+</header>
+<div class="overlay" id="overlay"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-head"><span class="drawer-logo">Ani<span>Nova</span></span><button class="icon-btn" id="closeBtn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <div class="drawer-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span>Home</a>
+    <a href="search.html"><span class="nav-icon">🔍</span>Search</a>
+    <div class="drawer-div"></div>
+    <a href="all-series.html"><span class="nav-icon">📺</span>All Series</a>
+    <a href="all-movies.html"><span class="nav-icon">🎬</span>All Movies</a>
+    <div class="drawer-div"></div>
+    <a href="genre.html"><span class="nav-icon">🎭</span>Genres</a>
+    <a href="language.html"><span class="nav-icon">🌐</span>Language</a>
+    <div class="drawer-div"></div>
+    <a href="contact.html"><span class="nav-icon">📧</span>Contact Us</a>
+    <a href="dmca.html" class="active"><span class="nav-icon">🛡️</span>DMCA</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-icon">🛡️</div>
+  <div class="page-title">DMCA Policy</div>
+  <p class="page-sub">AniNova respects intellectual property rights and takes copyright infringement seriously.</p>
+
+  <div class="notice-box">
+    ℹ️ AniNova does not host any video files on its servers. All content is embedded from third-party sources. We act as an index and search tool only.
+  </div>
+
+  <div class="dmca-section">
+    <h2>📌 Our Policy</h2>
+    <p>AniNova is a free anime streaming index website. We do not upload, store, or host any video content on our servers. All videos are hosted by third-party services and are embedded via external links.</p>
+    <p>We respect the intellectual property rights of all content creators and rights holders.</p>
+  </div>
+
+  <div class="dmca-section">
+    <h2>📩 How to Submit a DMCA Notice</h2>
+    <p>If you are a copyright owner and believe that content on AniNova infringes your rights, please send us a DMCA takedown notice with the following information:</p>
+    <ul>
+      <li>Your full name and contact information</li>
+      <li>Description of the copyrighted work</li>
+      <li>URL(s) of the infringing content on our site</li>
+      <li>A statement that you have a good faith belief the use is not authorized</li>
+      <li>Your electronic or physical signature</li>
+    </ul>
+  </div>
+
+  <div class="dmca-section">
+    <h2>⚡ Response Time</h2>
+    <p>We will review and respond to all valid DMCA notices within 48–72 hours. Upon verification, the infringing content will be removed promptly.</p>
+  </div>
+
+  <div class="dmca-section">
+    <h2>📧 Contact for DMCA</h2>
+    <p>Send your DMCA notice to our email. Please use "DMCA Takedown" as the subject line.</p>
+    <a class="btn-contact" href="mailto:dmca@aninova.com">
+      📧 dmca@aninova.com
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="all-series.html">All Series</a><a href="all-movies.html">All Movies</a>
+    <a href="genre.html">Genres</a><a href="language.html">Language</a>
+    <a href="contact.html">Contact Us</a><a href="dmca.html">DMCA</a>
+  </div>
+  <p class="footer-copy"><strong>AniNova</strong> © 2026 · Watch Anime Online Free</p>
+</footer>
+
+<script>
+  const drawer=document.getElementById('drawer'),overlay=document.getElementById('overlay');
+  document.getElementById('menuBtn').addEventListener('click',()=>{drawer.classList.add('open');overlay.classList.add('open');document.body.style.overflow='hidden';});
+  document.getElementById('closeBtn').addEventListener('click',()=>{drawer.classList.remove('open');overlay.classList.remove('open');document.body.style.overflow='';});
+  overlay.addEventListener('click',()=>{drawer.classList.remove('open');overlay.classList.remove('open');document.body.style.overflow='';});
+</script>
+</body>
+</html>
