@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AniNova Admin — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #070B14;
+      --bg2:     #0D1221;
+      --bg3:     #111827;
+      --primary: #00BFFF;
+      --secondary:#7A5CFF;
+      --text:    #FFFFFF;
+      --muted:   #8892A4;
+      --border:  #1A2035;
+      --error:   #FF4D6D;
+      --radius:  10px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background glow effects */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: -20%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle, rgba(0,191,255,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -20%;
+      right: -20%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle, rgba(122,92,255,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 28px;
+      width: 100%;
+      max-width: 380px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── LOGO ── */
+    .logo-wrap {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .logo-icon svg { width: 26px; height: 26px; fill: #000; }
+
+    .logo-name {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      display: block;
+    }
+
+    .logo-name span { color: var(--primary); }
+
+    .logo-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ── FORM ── */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 7px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      padding: 11px 13px 11px 40px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,191,255,0.1);
+    }
+
+    input::placeholder { color: var(--muted); opacity: 0.5; }
+
+    /* Password toggle */
+    .pass-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+    .pass-toggle:hover { color: var(--primary); }
+
+    /* ── ERROR ── */
+    .error-msg {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,77,109,0.1);
+      border: 1px solid rgba(255,77,109,0.3);
+      color: var(--error);
+      font-size: 0.8rem;
+      padding: 10px 13px;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+    .error-msg.show { display: flex; }
+
+    /* ── BUTTON ── */
+    .btn-login {
+      width: 100%;
+      background: var(--primary);
+      color: #000;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: opacity 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-login:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-login:active { transform: translateY(0); }
+    .btn-login:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Loading spinner */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .btn-login.loading .spinner { display: block; }
+    .btn-login.loading .btn-text { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── BACK LINK ── */
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--primary); }
+
+    /* ── RESPONSIVE ── */
+    @media (min-width: 480px) {
+      .card { padding: 44px 36px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </div>
+    <span class="logo-name">Ani<span>Nova</span></span>
+    <p class="logo-sub">Admin Panel</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-msg" id="errorMsg">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+    </svg>
+    <span id="errorText">Invalid credentials</span>
+  </div>
+
+  <!-- Username -->
+  <div class="form-group">
+    <label for="username">Username</label>
+    <div class="input-wrap">
+      <span class="input-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </span>
+      <input type="text" id="username" placeholder="Enter username" autocomplete="username">
+    </div>
+  </div>
+
+  <!-- Password -->
+  <div class="form-group">
+    <label for="password">Password</label>
+    <div class="input-wrap">
+      <span class="input-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </span>
+      <input type="password" id="password" placeholder="Enter password" autocomplete="current-password">
+      <button class="pass-toggle" id="passToggle" type="button" aria-label="Toggle password">
+        <svg id="eyeIcon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Login Button -->
+  <button class="btn-login" id="loginBtn" type="button">
+    <div class="spinner"></div>
+    <span class="btn-text">Login</span>
+  </button>
+
+  <a href="../index.html" class="back-link">← Back to AniNova</a>
+</div>
+
+<script type="module">
+  import { initializeApp }      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, doc, getDoc }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyDmg1xw9VXhszxm1IKmBKh24yQDDtSKoQ8",
+    authDomain:        "aninova-c1d69.firebaseapp.com",
+    projectId:         "aninova-c1d69",
+    storageBucket:     "aninova-c1d69.firebasestorage.app",
+    messagingSenderId: "1089254256286",
+    appId:             "1:1089254256286:web:7755ed1f346e0a0921958f"
+  };
+
+  initializeApp(firebaseConfig);
+
+  /* ── Admin credentials stored in Firestore
+     Collection: settings / Document: admin
+     Fields: { username: "...", password: "..." }
+     
+     First time setup: Go to Firebase Console →
+     Firestore → Add collection "settings" →
+     Add document "admin" → Add fields:
+       username: "your_username"
+       password: "your_password"
+  ── */
+
+  const db = getFirestore();
+
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+  const loginBtn      = document.getElementById('loginBtn');
+  const errorMsg      = document.getElementById('errorMsg');
+  const errorText     = document.getElementById('errorText');
+  const passToggle    = document.getElementById('passToggle');
+
+  // Password show/hide
+  passToggle.addEventListener('click', () => {
+    const isPass = passwordInput.type === 'password';
+    passwordInput.type = isPass ? 'text' : 'password';
+    passToggle.querySelector('svg').innerHTML = isPass
+      ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
+      : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+  });
+
+  // Enter key support
+  [usernameInput, passwordInput].forEach(el => {
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  });
+
+  loginBtn.addEventListener('click', doLogin);
+
+  function showError(msg) {
+    errorText.textContent = msg;
+    errorMsg.classList.add('show');
+  }
+
+  function hideError() {
+    errorMsg.classList.remove('show');
+  }
+
+  async function doLogin() {
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    hideError();
+
+    if (!username || !password) {
+      showError('Please enter username and password.');
+      return;
+    }
+
+    loginBtn.classList.add('loading');
+    loginBtn.disabled = true;
+
+    try {
+      const snap = await getDoc(doc(db, 'settings', 'admin'));
+
+      if (!snap.exists()) {
+        showError('Admin not configured. Set up in Firebase Console.');
+        return;
+      }
+
+      const data = snap.data();
+
+      if (username === data.username && password === data.password) {
+        // Save session
+        sessionStorage.setItem('aninova_admin', 'true');
+        sessionStorage.setItem('aninova_admin_user', username);
+        window.location.href = 'index.html';
+      } else {
+        showError('Wrong username or password.');
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    } catch (err) {
+      console.error(err);
+      showError('Connection error. Try again.');
+    } finally {
+      loginBtn.classList.remove('loading');
+      loginBtn.disabled = false;
+    }
+  }
+
+  // Already logged in?
+  if (sessionStorage.getItem('aninova_admin') === 'true') {
+    window.location.href = 'index.html';
+  }
+</script>
+</body>
+</html>
