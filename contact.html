@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us — AniNova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#070B14;--bg2:#0D1221;--bg3:#111827;--primary:#00BFFF;--secondary:#7A5CFF;--text:#fff;--muted:#8892A4;--border:#1A2035;--radius:8px;--hh:58px}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;background:none;color:inherit;font-family:inherit}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--primary);border-radius:2px}
+    header{position:sticky;top:0;z-index:100;height:var(--hh);background:rgba(7,11,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+    .logo{font-family:'Oxanium',sans-serif;font-size:1.35rem;font-weight:800;display:flex;align-items:center;gap:6px}
+    .logo-icon{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center}
+    .logo-icon svg{width:16px;height:16px;fill:#000}
+    .logo span{color:var(--primary)}
+    .header-right{display:flex;align-items:center;gap:4px}
+    .icon-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .2s,background .2s}
+    .icon-btn:hover{color:var(--primary);background:rgba(0,191,255,.1)}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+    .overlay.open{opacity:1;pointer-events:all}
+    .drawer{position:fixed;top:0;right:-290px;width:280px;height:100dvh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto}
+    .drawer.open{right:0}
+    .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;border-bottom:1px solid var(--border)}
+    .drawer-logo{font-family:'Oxanium',sans-serif;font-size:1.2rem;font-weight:800}.drawer-logo span{color:var(--primary)}
+    .drawer-nav{padding:8px 0}
+    .drawer-nav a{display:flex;align-items:center;gap:12px;padding:11px 16px;font-size:.9rem;font-weight:500;color:var(--muted);border-left:3px solid transparent;transition:color .2s,background .2s,border-color .2s}
+    .drawer-nav a:hover,.drawer-nav a.active{color:var(--primary);background:rgba(0,191,255,.07);border-left-color:var(--primary)}
+    .nav-icon{font-size:1rem;width:20px;text-align:center}
+    .drawer-div{height:1px;background:var(--border);margin:6px 16px}
+
+    .page-wrap{padding:28px 16px;max-width:600px;margin:0 auto}
+    .page-icon{font-size:2.5rem;margin-bottom:10px;text-align:center}
+    .page-title{font-family:'Oxanium',sans-serif;font-size:1.3rem;font-weight:800;text-align:center;margin-bottom:6px}
+    .page-sub{font-size:.85rem;color:var(--muted);text-align:center;margin-bottom:28px;line-height:1.6}
+
+    .contact-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+    .contact-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 14px;text-align:center;text-decoration:none;transition:border-color .2s,background .2s}
+    .contact-card:hover{border-color:var(--primary);background:rgba(0,191,255,.06)}
+    .contact-card-icon{font-size:1.6rem;margin-bottom:8px}
+    .contact-card-name{font-size:.85rem;font-weight:700;margin-bottom:3px}
+    .contact-card-sub{font-size:.72rem;color:var(--muted)}
+
+    .box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+    .box-title{font-family:'Oxanium',sans-serif;font-size:.9rem;font-weight:700;margin-bottom:14px}
+    .form-group{margin-bottom:14px}
+    label{display:block;font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .inp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:10px 12px;outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical}
+    .inp:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,191,255,.1)}
+    .inp::placeholder{color:var(--muted);opacity:.5}
+    .btn-submit{width:100%;background:var(--primary);color:#000;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.92rem;padding:11px;border-radius:var(--radius);border:none;cursor:pointer;transition:opacity .2s}
+    .btn-submit:hover{opacity:.88}
+    .success-msg{display:none;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#10B981;font-size:.82rem;padding:10px 14px;border-radius:var(--radius);margin-top:12px;text-align:center}
+    .success-msg.show{display:block}
+
+    footer{margin-top:40px;padding:20px 16px 32px;border-top:1px solid var(--border)}
+    .footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin-bottom:14px}
+    .footer-links a{font-size:.78rem;color:var(--muted);transition:color .2s}
+    .footer-links a:hover{color:var(--primary)}
+    .footer-copy{text-align:center;font-size:.72rem;color:var(--muted);opacity:.5}
+    .footer-copy strong{font-family:'Oxanium',sans-serif;font-weight:800;color:var(--primary);opacity:1}
+    @media(min-width:1024px){header{padding:0 48px}footer{padding:24px 48px 48px;max-width:1100px;margin:0 auto}}
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    Ani<span>Nova</span>
+  </a>
+  <div class="header-right">
+    <a href="search.html" class="icon-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></a>
+    <button class="icon-btn" id="menuBtn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  </div>
+</header>
+<div class="overlay" id="overlay"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-head"><span class="drawer-logo">Ani<span>Nova</span></span><button class="icon-btn" id="closeBtn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <div class="drawer-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span>Home</a>
+    <a href="search.html"><span class="nav-icon">🔍</span>Search</a>
+    <div class="drawer-div"></div>
+    <a href="all-series.html"><span class="nav-icon">📺</span>All Series</a>
+    <a href="all-movies.html"><span class="nav-icon">🎬</span>All Movies</a>
+    <div class="drawer-div"></div>
+    <a href="genre.html"><span class="nav-icon">🎭</span>Genres</a>
+    <a href="language.html"><span class="nav-icon">🌐</span>Language</a>
+    <div class="drawer-div"></div>
+    <a href="contact.html" class="active"><span class="nav-icon">📧</span>Contact Us</a>
+    <a href="dmca.html"><span class="nav-icon">🛡️</span>DMCA</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-icon">📧</div>
+  <div class="page-title">Contact Us</div>
+  <p class="page-sub">Have a question, suggestion, or found a broken link? We'd love to hear from you!</p>
+
+  <div class="contact-cards">
+    <a class="contact-card" href="mailto:contact@aninova.com">
+      <div class="contact-card-icon">✉️</div>
+      <div class="contact-card-name">Email</div>
+      <div class="contact-card-sub">contact@aninova.com</div>
+    </a>
+    <a class="contact-card" href="https://t.me/aninova" target="_blank">
+      <div class="contact-card-icon">✈️</div>
+      <div class="contact-card-name">Telegram</div>
+      <div class="contact-card-sub">@aninova</div>
+    </a>
+  </div>
+
+  <div class="box">
+    <div class="box-title">📝 Send a Message</div>
+    <div class="form-group">
+      <label>Your Name</label>
+      <input class="inp" id="cName" placeholder="Enter your name">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input class="inp" id="cEmail" type="email" placeholder="your@email.com">
+    </div>
+    <div class="form-group">
+      <label>Subject</label>
+      <input class="inp" id="cSubject" placeholder="What's this about?">
+    </div>
+    <div class="form-group">
+      <label>Message</label>
+      <textarea class="inp" id="cMsg" rows="4" placeholder="Write your message..."></textarea>
+    </div>
+    <button class="btn-submit" id="submitBtn">Send Message</button>
+    <div class="success-msg" id="successMsg">✅ Message sent! We'll get back to you soon.</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="all-series.html">All Series</a><a href="all-movies.html">All Movies</a>
+    <a href="genre.html">Genres</a><a href="language.html">Language</a>
+    <a href="contact.html">Contact Us</a><a href="dmca.html">DMCA</a>
+  </div>
+  <p class="footer-copy"><strong>AniNova</strong> © 2026 · Watch Anime Online Free</p>
+</footer>
+
+<script>
+  document.getElementById('submitBtn').addEventListener('click',()=>{
+    const name=document.getElementById('cName').value.trim();
+    const email=document.getElementById('cEmail').value.trim();
+    const msg=document.getElementById('cMsg').value.trim();
+    if(!name||!email||!msg){alert('Please fill all required fields.');return;}
+    document.getElementById('successMsg').classList.add('show');
+    document.getElementById('cName').value='';
+    document.getElementById('cEmail').value='';
+    document.getElementById('cSubject').value='';
+    document.getElementById('cMsg').value='';
+  });
+  const drawer=document.getElementById('drawer'),overlay=document.getElementById('overlay');
+  document.getElementById('menuBtn').addEventListener('click',()=>{drawer.classList.add('open');overlay.classList.add('open');document.body.style.overflow='hidden';});
+  document.getElementById('closeBtn').addEventListener('click',()=>{drawer.classList.remove('open');overlay.classList.remove('open');document.body.style.overflow='';});
+  overlay.addEventListener('click',()=>{drawer.classList.remove('open');overlay.classList.remove('open');document.body.style.overflow='';});
+</script>
+</body>
+</html>
