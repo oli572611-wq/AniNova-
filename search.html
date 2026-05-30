@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search — AniNova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#070B14;--bg2:#0D1221;--bg3:#111827;--primary:#00BFFF;--secondary:#7A5CFF;--text:#fff;--muted:#8892A4;--border:#1A2035;--radius:8px;--hh:58px}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;background:none;color:inherit;font-family:inherit}
+    img{display:block;max-width:100%}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--primary);border-radius:2px}
+
+    header{position:sticky;top:0;z-index:100;height:var(--hh);background:rgba(7,11,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+    .logo{font-family:'Oxanium',sans-serif;font-size:1.35rem;font-weight:800;display:flex;align-items:center;gap:6px}
+    .logo-icon{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center}
+    .logo-icon svg{width:16px;height:16px;fill:#000}
+    .logo span{color:var(--primary)}
+    .header-right{display:flex;align-items:center;gap:4px}
+    .icon-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .2s,background .2s}
+    .icon-btn:hover{color:var(--primary);background:rgba(0,191,255,.1)}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+    .overlay.open{opacity:1;pointer-events:all}
+    .drawer{position:fixed;top:0;right:-290px;width:280px;height:100dvh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto}
+    .drawer.open{right:0}
+    .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;border-bottom:1px solid var(--border)}
+    .drawer-logo{font-family:'Oxanium',sans-serif;font-size:1.2rem;font-weight:800}.drawer-logo span{color:var(--primary)}
+    .drawer-nav{padding:8px 0}
+    .drawer-nav a{display:flex;align-items:center;gap:12px;padding:11px 16px;font-size:.9rem;font-weight:500;color:var(--muted);border-left:3px solid transparent;transition:color .2s,background .2s,border-color .2s}
+    .drawer-nav a:hover{color:var(--primary);background:rgba(0,191,255,.07);border-left-color:var(--primary)}
+    .nav-icon{font-size:1rem;width:20px;text-align:center}
+    .drawer-div{height:1px;background:var(--border);margin:6px 16px}
+
+    /* SEARCH HERO */
+    .search-hero{padding:28px 16px 20px;text-align:center}
+    .search-heading{font-family:'Oxanium',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:16px}
+    .search-heading span{color:var(--primary)}
+
+    .search-box{display:flex;gap:8px;max-width:560px;margin:0 auto}
+    .search-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.92rem;padding:12px 16px;outline:none;transition:border-color .2s,box-shadow .2s}
+    .search-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,191,255,.1)}
+    .search-input::placeholder{color:var(--muted);opacity:.5}
+    .search-btn{background:var(--primary);color:#000;font-weight:700;font-size:.88rem;padding:12px 18px;border-radius:var(--radius);display:flex;align-items:center;gap:6px;transition:opacity .2s}
+    .search-btn:hover{opacity:.88}
+
+    /* FILTER TABS */
+    .filter-row{display:flex;justify-content:center;gap:8px;padding:0 16px 18px;flex-wrap:wrap}
+    .filter-btn{padding:6px 18px;border-radius:20px;font-size:.8rem;font-weight:700;background:var(--bg2);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s}
+    .filter-btn.active{background:var(--primary);color:#000;border-color:var(--primary)}
+
+    /* RESULTS */
+    .results-wrap{padding:0 16px;max-width:1100px;margin:0 auto}
+    .results-info{font-size:.8rem;color:var(--muted);margin-bottom:14px}
+    .results-info span{color:var(--primary);font-weight:600}
+
+    .results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+
+    .anime-card{text-decoration:none;display:block}
+    .anime-card-img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:var(--radius);background:var(--bg3);transition:transform .28s,box-shadow .28s}
+    .anime-card:hover .anime-card-img{transform:scale(1.04);box-shadow:0 6px 20px rgba(0,191,255,.2)}
+    .anime-card-name{font-size:.72rem;font-weight:600;color:var(--muted);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:color .2s}
+    .anime-card:hover .anime-card-name{color:var(--text)}
+    .anime-card-meta{font-size:.65rem;color:var(--muted);opacity:.6;margin-top:2px}
+
+    /* LOAD MORE */
+    .load-more-wrap{text-align:center;padding-bottom:28px}
+    .load-more-btn{display:inline-flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:.85rem;font-weight:600;padding:11px 28px;border-radius:var(--radius);transition:border-color .2s,background .2s}
+    .load-more-btn:hover{border-color:var(--primary);background:rgba(0,191,255,.06);color:var(--primary)}
+
+    /* EMPTY / ERROR */
+    .state-box{text-align:center;padding:48px 16px;color:var(--muted)}
+    .state-icon{font-size:2.5rem;margin-bottom:12px}
+    .state-title{font-family:'Oxanium',sans-serif;font-size:1rem;font-weight:700;margin-bottom:6px;color:var(--text)}
+    .state-sub{font-size:.82rem}
+
+    /* SKELETON */
+    .skel{background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:300% 100%;animation:shimmer 1.6s infinite linear;border-radius:var(--radius)}
+    @keyframes shimmer{0%{background-position:300% 0}100%{background-position:-300% 0}}
+    .skel-card{display:block}.skel-img{aspect-ratio:2/3}.skel-txt{height:8px;margin-top:7px;width:80%}
+
+    /* SPINNER */
+    .spin{width:18px;height:18px;border:2px solid rgba(0,191,255,.2);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    footer{margin-top:20px;padding:20px 16px 32px;border-top:1px solid var(--border)}
+    .footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin-bottom:14px}
+    .footer-links a{font-size:.78rem;color:var(--muted);transition:color .2s}
+    .footer-links a:hover{color:var(--primary)}
+    .footer-copy{text-align:center;font-size:.72rem;color:var(--muted);opacity:.5}
+    .footer-copy strong{font-family:'Oxanium',sans-serif;font-weight:800;color:var(--primary);opacity:1}
+
+    @media(min-width:480px){.results-grid{grid-template-columns:repeat(4,1fr)}}
+    @media(min-width:640px){
+      .search-hero{padding:36px 24px 24px}
+      .results-wrap{padding:0 24px}
+    }
+    @media(min-width:1024px){
+      header{padding:0 48px}
+      .results-grid{grid-template-columns:repeat(6,1fr)}
+      .results-wrap{padding:0 48px}
+      footer{padding:24px 48px 48px;max-width:1100px;margin:0 auto}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    Ani<span>Nova</span>
+  </a>
+  <div class="header-right">
+    <button class="icon-btn" id="menuBtn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span class="drawer-logo">Ani<span>Nova</span></span>
+    <button class="icon-btn" id="closeBtn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span>Home</a>
+    <a href="search.html" style="color:var(--primary);border-left-color:var(--primary)"><span class="nav-icon">🔍</span>Search</a>
+    <div class="drawer-div"></div>
+    <a href="all-series.html"><span class="nav-icon">📺</span>All Series</a>
+    <a href="all-movies.html"><span class="nav-icon">🎬</span>All Movies</a>
+    <div class="drawer-div"></div>
+    <a href="genre.html"><span class="nav-icon">🎭</span>Genres</a>
+    <a href="language.html"><span class="nav-icon">🌐</span>Language</a>
+    <div class="drawer-div"></div>
+    <a href="contact.html"><span class="nav-icon">📧</span>Contact Us</a>
+    <a href="dmca.html"><span class="nav-icon">🛡️</span>DMCA</a>
+  </div>
+</nav>
+
+<!-- SEARCH HERO -->
+<div class="search-hero">
+  <h1 class="search-heading">Search <span>AniNova</span></h1>
+  <div class="search-box">
+    <input class="search-input" id="searchInput" placeholder="Search anime, movies..." autocomplete="off">
+    <button class="search-btn" id="searchBtn">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Search
+    </button>
+  </div>
+</div>
+
+<!-- FILTER -->
+<div class="filter-row">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="series">Series</button>
+  <button class="filter-btn" data-filter="movie">Movies</button>
+</div>
+
+<!-- RESULTS -->
+<div class="results-wrap">
+  <div id="resultsInfo" class="results-info" style="display:none"></div>
+  <div class="results-grid" id="resultsGrid">
+    <!-- Initial state -->
+    <div class="state-box" style="grid-column:1/-1">
+      <div class="state-icon">🔍</div>
+      <div class="state-title">Search Anime</div>
+      <div class="state-sub">Type an anime or movie name to get started</div>
+    </div>
+  </div>
+  <div class="load-more-wrap" id="loadMoreWrap" style="display:none">
+    <button class="load-more-btn" id="loadMoreBtn">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Load More
+    </button>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="all-series.html">All Series</a>
+    <a href="all-movies.html">All Movies</a>
+    <a href="genre.html">Genres</a>
+    <a href="language.html">Language</a>
+    <a href="contact.html">Contact Us</a>
+    <a href="dmca.html">DMCA</a>
+  </div>
+  <p class="footer-copy"><strong>AniNova</strong> © 2026 · Watch Anime Online Free</p>
+</footer>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, getDocs, query, where, orderBy }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey:"AIzaSyDmg1xw9VXhszxm1IKmBKh24yQDDtSKoQ8",
+    authDomain:"aninova-c1d69.firebaseapp.com",
+    projectId:"aninova-c1d69",
+    storageBucket:"aninova-c1d69.firebasestorage.app",
+    messagingSenderId:"1089254256286",
+    appId:"1:1089254256286:web:7755ed1f346e0a0921958f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  const PAGE_SIZE = 18;
+  let allResults  = [];
+  let filtered    = [];
+  let displayed   = 0;
+  let activeFilter = 'all';
+
+  function toSlug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+
+  function cardHTML(a) {
+    const slug = toSlug(a.title||'');
+    const href = a.type==='movie' ? `movie.html?id=${a.id}&slug=${slug}` : `series.html?id=${a.id}&slug=${slug}`;
+    const meta = [a.type==='movie'?'🎬 Movie':'📺 Series', a.audio_lang].filter(Boolean).join(' · ');
+    return `<a class="anime-card" href="${href}">
+      <img class="anime-card-img" src="${a.cover_url||''}" alt="${a.title}" loading="lazy"
+           onerror="this.src='https://placehold.co/140x210/0D1221/8892A4?text=?'">
+      <p class="anime-card-name">${a.title||''}</p>
+      <p class="anime-card-meta">${meta}</p>
+    </a>`;
+  }
+
+  function skeletons(n=6){
+    return Array(n).fill(0).map(()=>`<div class="skel-card"><div class="skel skel-img"></div><div class="skel skel-txt"></div></div>`).join('');
+  }
+
+  function showResults() {
+    const grid = document.getElementById('resultsGrid');
+    const info = document.getElementById('resultsInfo');
+    const lmWrap = document.getElementById('loadMoreWrap');
+
+    if (!filtered.length) {
+      grid.innerHTML = `<div class="state-box" style="grid-column:1/-1">
+        <div class="state-icon">😔</div>
+        <div class="state-title">No results found</div>
+        <div class="state-sub">Try a different keyword or filter</div>
+      </div>`;
+      info.style.display = 'none';
+      lmWrap.style.display = 'none';
+      return;
+    }
+
+    const batch = filtered.slice(0, displayed);
+    grid.innerHTML = batch.map(cardHTML).join('');
+    info.style.display = 'block';
+    info.innerHTML = `Showing <span>${batch.length}</span> of <span>${filtered.length}</span> results`;
+    lmWrap.style.display = displayed < filtered.length ? 'block' : 'none';
+  }
+
+  async function doSearch(q) {
+    const grid = document.getElementById('resultsGrid');
+    const info = document.getElementById('resultsInfo');
+    grid.innerHTML = skeletons();
+    info.style.display = 'none';
+    document.getElementById('loadMoreWrap').style.display = 'none';
+
+    try {
+      const snap = await getDocs(collection(db,'anime'));
+      allResults  = snap.docs.map(d => ({id:d.id,...d.data()}));
+
+      const term = q.toLowerCase().trim();
+      const matched = term
+        ? allResults.filter(a =>
+            (a.title||'').toLowerCase().includes(term) ||
+            (a.original_title||'').toLowerCase().includes(term) ||
+            (Array.isArray(a.genres)?a.genres:[]).some(g => g.toLowerCase().includes(term))
+          )
+        : allResults;
+
+      applyFilter(matched);
+    } catch(e) {
+      grid.innerHTML = `<div class="state-box" style="grid-column:1/-1">
+        <div class="state-icon">⚠️</div>
+        <div class="state-title">Something went wrong</div>
+        <div class="state-sub">Check your connection and try again</div>
+      </div>`;
+    }
+  }
+
+  function applyFilter(data) {
+    data = data || allResults;
+    if (activeFilter === 'series') filtered = data.filter(a => a.type==='series');
+    else if (activeFilter === 'movie') filtered = data.filter(a => a.type==='movie');
+    else filtered = data;
+    displayed = PAGE_SIZE;
+    showResults();
+  }
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      if (allResults.length) {
+        const term = document.getElementById('searchInput').value.trim().toLowerCase();
+        const matched = term
+          ? allResults.filter(a =>
+              (a.title||'').toLowerCase().includes(term) ||
+              (a.original_title||'').toLowerCase().includes(term)
+            )
+          : allResults;
+        applyFilter(matched);
+      }
+    });
+  });
+
+  // Load more
+  document.getElementById('loadMoreBtn').addEventListener('click', () => {
+    displayed += PAGE_SIZE;
+    showResults();
+    window.scrollBy({top:200,behavior:'smooth'});
+  });
+
+  // Search trigger
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn   = document.getElementById('searchBtn');
+
+  function triggerSearch() {
+    const q = searchInput.value.trim();
+    if (!q) return;
+    history.replaceState(null,'',`search.html?q=${encodeURIComponent(q)}`);
+    doSearch(q);
+  }
+
+  searchBtn.addEventListener('click', triggerSearch);
+  searchInput.addEventListener('keydown', e => { if(e.key==='Enter') triggerSearch(); });
+
+  // Auto search from URL
+  const urlQ = new URLSearchParams(location.search).get('q');
+  if (urlQ) {
+    searchInput.value = urlQ;
+    doSearch(urlQ);
+  }
+
+  // Drawer
+  const drawer  = document.getElementById('drawer');
+  const overlay = document.getElementById('overlay');
+  document.getElementById('menuBtn').addEventListener('click',()=>{ drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; });
+  document.getElementById('closeBtn').addEventListener('click',()=>{ drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; });
+  overlay.addEventListener('click',()=>{ drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; });
+</script>
+</body>
+</html>
