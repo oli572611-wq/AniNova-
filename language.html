@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Language — AniNova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#070B14;--bg2:#0D1221;--bg3:#111827;--primary:#00BFFF;--secondary:#7A5CFF;--text:#fff;--muted:#8892A4;--border:#1A2035;--radius:8px;--hh:58px}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;background:none;color:inherit;font-family:inherit}
+    img{display:block}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--primary);border-radius:2px}
+    header{position:sticky;top:0;z-index:100;height:var(--hh);background:rgba(7,11,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+    .logo{font-family:'Oxanium',sans-serif;font-size:1.35rem;font-weight:800;display:flex;align-items:center;gap:6px}
+    .logo-icon{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center}
+    .logo-icon svg{width:16px;height:16px;fill:#000}
+    .logo span{color:var(--primary)}
+    .header-right{display:flex;align-items:center;gap:4px}
+    .icon-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color .2s,background .2s}
+    .icon-btn:hover{color:var(--primary);background:rgba(0,191,255,.1)}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+    .overlay.open{opacity:1;pointer-events:all}
+    .drawer{position:fixed;top:0;right:-290px;width:280px;height:100dvh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto}
+    .drawer.open{right:0}
+    .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;border-bottom:1px solid var(--border)}
+    .drawer-logo{font-family:'Oxanium',sans-serif;font-size:1.2rem;font-weight:800}.drawer-logo span{color:var(--primary)}
+    .drawer-nav{padding:8px 0}
+    .drawer-nav a{display:flex;align-items:center;gap:12px;padding:11px 16px;font-size:.9rem;font-weight:500;color:var(--muted);border-left:3px solid transparent;transition:color .2s,background .2s,border-color .2s}
+    .drawer-nav a:hover,.drawer-nav a.active{color:var(--primary);background:rgba(0,191,255,.07);border-left-color:var(--primary)}
+    .nav-icon{font-size:1rem;width:20px;text-align:center}
+    .drawer-div{height:1px;background:var(--border);margin:6px 16px}
+
+    .page-wrap{padding:24px 16px;max-width:1100px;margin:0 auto}
+    .page-title{font-family:'Oxanium',sans-serif;font-size:1.2rem;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:20px}
+    .page-title::before{content:'';display:block;width:3px;height:18px;background:var(--primary);border-radius:2px}
+
+    .lang-grid{display:grid;grid-template-columns:repeat(1,1fr);gap:10px;margin-bottom:28px}
+    .lang-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;cursor:pointer;transition:border-color .2s,background .2s;display:flex;align-items:center;gap:14px}
+    .lang-card:hover{border-color:var(--primary);background:rgba(0,191,255,.06)}
+    .lang-card.active{border-color:var(--primary);background:rgba(0,191,255,.1)}
+    .lang-flag{font-size:1.8rem;flex-shrink:0}
+    .lang-name{font-family:'Oxanium',sans-serif;font-size:1rem;font-weight:800}
+    .lang-sub{font-size:.75rem;color:var(--muted);margin-top:2px}
+    .lang-count{margin-left:auto;font-size:.75rem;font-weight:700;color:var(--primary);background:rgba(0,191,255,.1);padding:3px 10px;border-radius:20px}
+
+    .results-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .results-title{font-family:'Oxanium',sans-serif;font-size:.95rem;font-weight:700}
+    .results-title span{color:var(--primary)}
+    .clear-btn{font-size:.75rem;color:var(--muted);padding:5px 10px;border-radius:var(--radius);border:1px solid var(--border);transition:color .2s}
+    .clear-btn:hover{color:var(--primary)}
+
+    .anime-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+    .anime-card{text-decoration:none}
+    .anime-card-img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:var(--radius);background:var(--bg3);transition:transform .28s,box-shadow .28s}
+    .anime-card:hover .anime-card-img{transform:scale(1.04);box-shadow:0 6px 20px rgba(0,191,255,.2)}
+    .anime-card-name{font-size:.72rem;font-weight:600;color:var(--muted);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .anime-card:hover .anime-card-name{color:var(--text)}
+
+    .load-more-wrap{text-align:center;margin-bottom:32px}
+    .load-more-btn{display:inline-flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:.85rem;font-weight:600;padding:11px 28px;border-radius:var(--radius);transition:border-color .2s,color .2s}
+    .load-more-btn:hover{border-color:var(--primary);color:var(--primary)}
+
+    .skel{background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:300% 100%;animation:shimmer 1.6s infinite linear;border-radius:var(--radius)}
+    @keyframes shimmer{0%{background-position:300% 0}100%{background-position:-300% 0}}
+    .empty{text-align:center;padding:40px;color:var(--muted);font-size:.85rem;grid-column:1/-1}
+
+    footer{padding:20px 16px 32px;border-top:1px solid var(--border)}
+    .footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin-bottom:14px}
+    .footer-links a{font-size:.78rem;color:var(--muted);transition:color .2s}
+    .footer-links a:hover{color:var(--primary)}
+    .footer-copy{text-align:center;font-size:.72rem;color:var(--muted);opacity:.5}
+    .footer-copy strong{font-family:'Oxanium',sans-serif;font-weight:800;color:var(--primary);opacity:1}
+
+    @media(min-width:480px){.lang-grid{grid-template-columns:repeat(2,1fr)}.anime-grid{grid-template-columns:repeat(4,1fr)}}
+    @media(min-width:768px){.lang-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:1024px){header{padding:0 48px}.page-wrap{padding:28px 48px}.anime-grid{grid-template-columns:repeat(6,1fr)}footer{padding:24px 48px 48px;max-width:1100px;margin:0 auto}}
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    Ani<span>Nova</span>
+  </a>
+  <div class="header-right">
+    <a href="search.html" class="icon-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></a>
+    <button class="icon-btn" id="menuBtn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span class="drawer-logo">Ani<span>Nova</span></span>
+    <button class="icon-btn" id="closeBtn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="drawer-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span>Home</a>
+    <a href="search.html"><span class="nav-icon">🔍</span>Search</a>
+    <div class="drawer-div"></div>
+    <a href="all-series.html"><span class="nav-icon">📺</span>All Series</a>
+    <a href="all-movies.html"><span class="nav-icon">🎬</span>All Movies</a>
+    <div class="drawer-div"></div>
+    <a href="genre.html"><span class="nav-icon">🎭</span>Genres</a>
+    <a href="language.html" class="active"><span class="nav-icon">🌐</span>Language</a>
+    <div class="drawer-div"></div>
+    <a href="contact.html"><span class="nav-icon">📧</span>Contact Us</a>
+    <a href="dmca.html"><span class="nav-icon">🛡️</span>DMCA</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-title">Browse by Language</div>
+
+  <div class="lang-grid" id="langGrid">
+    <div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);font-size:.85rem">Loading...</div>
+  </div>
+
+  <div id="resultsSection" style="display:none">
+    <div class="results-head">
+      <div class="results-title">Language: <span id="activeLangName"></span></div>
+      <button class="clear-btn" id="clearBtn">✕ Clear</button>
+    </div>
+    <div class="anime-grid" id="animeGrid"></div>
+    <div class="load-more-wrap" id="lmWrap" style="display:none">
+      <button class="load-more-btn" id="lmBtn">Load More</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="all-series.html">All Series</a><a href="all-movies.html">All Movies</a>
+    <a href="genre.html">Genres</a><a href="language.html">Language</a>
+    <a href="contact.html">Contact Us</a><a href="dmca.html">DMCA</a>
+  </div>
+  <p class="footer-copy"><strong>AniNova</strong> © 2026 · Watch Anime Online Free</p>
+</footer>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey:"AIzaSyDmg1xw9VXhszxm1IKmBKh24yQDDtSKoQ8",authDomain:"aninova-c1d69.firebaseapp.com",
+    projectId:"aninova-c1d69",storageBucket:"aninova-c1d69.firebasestorage.app",
+    messagingSenderId:"1089254256286",appId:"1:1089254256286:web:7755ed1f346e0a0921958f"
+  };
+  initializeApp(firebaseConfig);
+  const db = getFirestore();
+
+  const LANG_INFO = {
+    'Hindi':              { flag:'🇮🇳', sub:'Hindi Dubbed Anime' },
+    'Multi Audio':        { flag:'🌐', sub:'Multiple Audio Tracks' },
+    'Hindi + Multi Audio':{ flag:'🇮🇳', sub:'Hindi & Multi Audio' },
+    'Tamil':              { flag:'🇮🇳', sub:'Tamil Dubbed Anime' },
+    'Telugu':             { flag:'🇮🇳', sub:'Telugu Dubbed Anime' },
+    'English':            { flag:'🇬🇧', sub:'English Dubbed Anime' },
+    'Japanese':           { flag:'🇯🇵', sub:'Japanese with Subtitles' },
+    'Korean':             { flag:'🇰🇷', sub:'Korean Dubbed Anime' },
+    'Bengali':            { flag:'🇧🇩', sub:'Bengali Dubbed Anime' },
+  };
+
+  const PAGE = 18;
+  let allAnime=[], filtered=[], shown=0;
+
+  function toSlug(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+
+  function cardHTML(a){
+    const slug=toSlug(a.title||'');
+    const href=a.type==='movie'?`movie.html?id=${a.id}&slug=${slug}`:`series.html?id=${a.id}&slug=${slug}`;
+    return `<a class="anime-card" href="${href}">
+      <img class="anime-card-img" src="${a.cover_url||''}" alt="${a.title}" loading="lazy" onerror="this.src='https://placehold.co/140x210/0D1221/8892A4?text=?'">
+      <p class="anime-card-name">${a.title||''}</p>
+    </a>`;
+  }
+
+  function renderResults(){
+    const grid=document.getElementById('animeGrid');
+    const lmw=document.getElementById('lmWrap');
+    if(!filtered.length){
+      grid.innerHTML='<div class="empty">No anime found for this language.</div>';
+      lmw.style.display='none'; return;
+    }
+    grid.innerHTML=filtered.slice(0,shown).map(cardHTML).join('');
+    lmw.style.display=shown<filtered.length?'block':'none';
+  }
+
+  function selectLang(lang){
+    document.getElementById('activeLangName').textContent=lang;
+    document.getElementById('resultsSection').style.display='block';
+    document.querySelectorAll('.lang-card').forEach(c=>c.classList.toggle('active',c.dataset.lang===lang));
+    filtered=allAnime.filter(a=>a.audio_lang===lang);
+    shown=PAGE; renderResults();
+    document.getElementById('resultsSection').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  const snap=await getDocs(collection(db,'anime'));
+  allAnime=snap.docs.map(d=>({id:d.id,...d.data()}));
+
+  const langMap={};
+  allAnime.forEach(a=>{ if(a.audio_lang) langMap[a.audio_lang]=(langMap[a.audio_lang]||0)+1; });
+
+  document.getElementById('langGrid').innerHTML=Object.entries(langMap).length
+    ? Object.entries(langMap).map(([lang,cnt])=>{
+        const info=LANG_INFO[lang]||{flag:'🎌',sub:'Anime'};
+        return `<div class="lang-card" data-lang="${lang}">
+          <span class="lang-flag">${info.flag}</span>
+          <div><div class="lang-name">${lang}</div><div class="lang-sub">${info.sub}</div></div>
+          <span class="lang-count">${cnt}</span>
+        </div>`;
+      }).join('')
+    : '<div style="text-align:center;padding:24px;color:var(--muted);font-size:.85rem">No language data. Add anime first.</div>';
+
+  document.querySelectorAll('.lang-card').forEach(c=>{
+    c.addEventListener('click',()=>selectLang(c.dataset.lang));
+  });
+  document.getElementById('clearBtn').addEventListener('click',()=>{
+    document.getElementById('resultsSection').style.display='none';
+    document.querySelectorAll('.lang-card').forEach(c=>c.classList.remove('active'));
+  });
+  document.getElementById('lmBtn').addEventListener('click',()=>{shown+=PAGE;renderResults();});
+
+  const urlL=new URLSearchParams(location.search).get('l');
+  if(urlL) setTimeout(()=>selectLang(urlL),300);
+
+  const drawer=document.getElementById('drawer'),overlay=document.getElementById('overlay');
+  document.getElementById('menuBtn').addEventListener('click',()=>{drawer.classList.add('open');overlay.classList.add('open');document.body.style.overflow='hidden';});
+  document.getElementById('closeBtn').addEventListener('click',()=>{drawer.classList.remove('open');overlay.classList.remove('open');document.body.style.overflow='';});
+  overlay.addEventListener('click',()=>{drawer.classList.remove('open');overlay.classList.remove('open');document.body.style.overflow='';});
+</script>
+</body>
+</html>
