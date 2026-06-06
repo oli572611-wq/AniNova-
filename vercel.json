@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/series/:slug", "destination": "/series.html" },
+    { "source": "/movie/:slug", "destination": "/movie.html" },
+    { "source": "/watch/movie/:slug", "destination": "/watch-movie.html" },
+    { "source": "/watch/:slug/:season/:episode", "destination": "/watch.html" }
+  ]
+}
