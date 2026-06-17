@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AniNova — Watch Anime Online Free</title>
+  <meta name="description" content="Watch Hindi Dubbed Anime Online Free on AniNova">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #070B14;
+      --bg2:      #0D1221;
+      --bg3:      #111827;
+      --primary:  #00BFFF;
+      --secondary:#7A5CFF;
+      --text:     #FFFFFF;
+      --muted:    #8892A4;
+      --border:   #1A2035;
+      --radius:   8px;
+      --hh:       58px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; background: none; color: inherit; font-family: inherit; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
+
+    /* ══════════════════════════════
+       HEADER
+    ══════════════════════════════ */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--hh);
+      background: rgba(7, 11, 20, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      transition: background 0.3s;
+    }
+
+    header.scrolled { background: rgba(7, 11, 20, 0.97); }
+
+    .logo {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg { width: 16px; height: 16px; fill: #000; }
+    .logo span { color: var(--primary); }
+
+#siteLogo{
+  height:48px;
+  width:auto;
+  display:block;
+  object-fit:contain;
+}
+
+@media (max-width:768px){
+  #siteLogo{
+    height:38px;
+  }
+}
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .icon-btn:hover { color: var(--primary); background: rgba(0,191,255,0.1); }
+
+    /* ══════════════════════════════
+       DRAWER
+    ══════════════════════════════ */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .drawer {
+      position: fixed;
+      top: 0; right: -290px;
+      width: 280px;
+      height: 100dvh;
+      background: var(--bg2);
+      border-left: 1px solid var(--border);
+      z-index: 201;
+      transition: right 0.3s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .drawer.open { right: 0; }
+
+    .drawer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .drawer-logo {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+    .drawer-logo span { color: var(--primary); }
+
+    .drawer-nav { padding: 8px 0; flex: 1; }
+
+    .drawer-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--muted);
+      border-left: 3px solid transparent;
+      transition: color 0.2s, background 0.2s, border-color 0.2s;
+    }
+
+    .drawer-nav a:hover,
+    .drawer-nav a.active {
+      color: var(--primary);
+      background: rgba(0,191,255,0.07);
+      border-left-color: var(--primary);
+    }
+
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    .drawer-div {
+      height: 1px;
+      background: var(--border);
+      margin: 6px 16px;
+    }
+
+    /* ══════════════════════════════
+       HERO
+    ══════════════════════════════ */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 72vw;
+      max-height: 520px;
+      min-height: 260px;
+      overflow: hidden;
+      background: var(--bg2);
+    }
+
+    .hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: opacity 0.5s;
+    }
+
+    .hero-img.loading { opacity: 0; }
+
+    .hero-grad {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(7,11,20,0.96) 0%, rgba(7,11,20,0.6) 55%, rgba(7,11,20,0.1) 100%),
+        linear-gradient(0deg,  rgba(7,11,20,1)    0%, rgba(7,11,20,0)   45%);
+    }
+
+    .hero-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 16px 24px;
+      max-width: 640px;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 7px;
+    }
+
+    .hero-tag::before {
+      content: '';
+      width: 16px;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 1px;
+    }
+
+    .hero-title {
+      font-family: 'Oxanium', sans-serif;
+      font-size: clamp(1.2rem, 5.5vw, 2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta-badge {
+      background: rgba(0,191,255,0.15);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .hero-btns { display: flex; gap: 10px; align-items: center; }
+
+    .btn-watch {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--primary);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 9px 20px;
+      border-radius: var(--radius);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-watch:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .btn-detail {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.82rem;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: background 0.2s;
+    }
+    .btn-detail:hover { background: rgba(255,255,255,0.16); }
+
+    /* Hero dots */
+    .hero-dots {
+      position: absolute;
+      bottom: 14px;
+      right: 16px;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .hero-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.25);
+      cursor: pointer;
+      transition: background 0.25s, width 0.25s;
+      border: none;
+    }
+    .hero-dot.active { width: 20px; background: var(--primary); }
+
+    /* ══════════════════════════════
+       SECTIONS
+    ══════════════════════════════ */
+    .section {
+      padding: 20px 16px 4px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: block;
+      width: 3px;
+      height: 16px;
+      background: var(--primary);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .see-all {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      opacity: 0.75;
+      transition: opacity 0.2s;
+    }
+    .see-all:hover { opacity: 1; }
+
+    /* ══════════════════════════════
+       ANIME ROW (horizontal scroll)
+    ══════════════════════════════ */
+    .anime-row {
+      display: flex;
+      gap: 9px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 6px;
+    }
+    .anime-row::-webkit-scrollbar { display: none; }
+
+    /* ══════════════════════════════
+       CARD
+    ══════════════════════════════ */
+    .card {
+      flex: 0 0 calc(33.33% - 6px);
+      scroll-snap-align: start;
+      cursor: pointer;
+    }
+
+    .card-poster {
+      width: 100%;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      border-radius: var(--radius);
+      background: var(--bg3);
+      transition: transform 0.28s ease, box-shadow 0.28s ease;
+    }
+
+    .card:hover .card-poster {
+      transform: scale(1.04);
+      box-shadow: 0 6px 24px rgba(0,191,255,0.25);
+    }
+
+    .card-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      transition: color 0.2s;
+    }
+    .card:hover .card-name { color: var(--text); }
+
+    /* ══════════════════════════════
+       SKELETON
+    ══════════════════════════════ */
+    .skel {
+      background: linear-gradient(90deg, var(--bg2) 25%, var(--bg3) 50%, var(--bg2) 75%);
+      background-size: 300% 100%;
+      animation: shimmer 1.6s infinite linear;
+      border-radius: var(--radius);
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 300% 0; }
+      100% { background-position: -300% 0; }
+    }
+
+    .skel-card { flex: 0 0 calc(33.33% - 6px); }
+    .skel-img  { aspect-ratio: 2/3; border-radius: var(--radius); }
+    .skel-txt  { height: 9px; margin-top: 7px; border-radius: 4px; width: 75%; }
+
+    /* ══════════════════════════════
+       FOOTER
+    ══════════════════════════════ */
+    footer {
+      margin-top: 36px;
+      padding: 20px 16px 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 20px;
+      margin-bottom: 14px;
+    }
+
+    .footer-links a {
+      font-size: 0.78rem;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--primary); }
+
+    .footer-copy {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    .footer-copy strong {
+      font-family: 'Oxanium', sans-serif;
+      font-weight: 800;
+      color: var(--primary);
+      opacity: 1;
+    }
+
+    /* ══════════════════════════════
+       RESPONSIVE — TABLET
+    ══════════════════════════════ */
+    @media (min-width: 480px) {
+      .card { flex: 0 0 calc(25% - 7px); }
+      .skel-card { flex: 0 0 calc(25% - 7px); }
+    }
+
+    @media (min-width: 640px) {
+      .hero { height: 55vw; }
+      .card { flex: 0 0 calc(20% - 8px); }
+      .skel-card { flex: 0 0 calc(20% - 8px); }
+      .hero-content { padding: 0 24px 32px; }
+      .section { padding: 24px 24px 4px; }
+      footer { padding: 24px 24px 40px; }
+    }
+
+    /* ══════════════════════════════
+       RESPONSIVE — DESKTOP
+    ══════════════════════════════ */
+    @media (min-width: 1024px) {
+      header { padding: 0 48px; }
+      .hero { height: 48vw; max-height: 580px; }
+      .hero-content { padding: 0 48px 44px; max-width: 680px; }
+      .hero-desc { -webkit-line-clamp: 3; font-size: 0.85rem; }
+      .hero-title { margin-bottom: 10px; }
+      .section { padding: 28px 48px 6px; max-width: 1400px; margin: 0 auto; }
+      .card { flex: 0 0 calc(16.66% - 8px); }
+      .skel-card { flex: 0 0 calc(16.66% - 8px); }
+      footer { padding: 28px 48px 48px; max-width: 1400px; margin: 0 auto; }
+    }
+
+    @media (min-width: 1280px) {
+      header { padding: 0 64px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header id="header">
+<a href="index.html" class="logo">
+  <img id="siteLogo" src="" alt="AniNova">
+</a>
+  <div class="header-right">
+    <a href="search.html" class="icon-btn" aria-label="Search">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+    </a>
+    <button class="icon-btn" id="menuBtn" aria-label="Open menu">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ══════════ OVERLAY ══════════ -->
+<div class="overlay" id="overlay"></div>
+
+<!-- ══════════ DRAWER ══════════ -->
+<nav class="drawer" id="drawer" aria-label="Site navigation">
+  <div class="drawer-head">
+    <span class="drawer-logo">Ani<span>Nova</span></span>
+    <button class="icon-btn" id="closeBtn" aria-label="Close menu">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div class="drawer-nav">
+    <a href="index.html" class="active"><span class="nav-icon">🏠</span>Home</a>
+    <a href="search.html"><span class="nav-icon">🔍</span>Search</a>
+    <div class="drawer-div"></div>
+    <a href="all-series.html"><span class="nav-icon">📺</span>All Series</a>
+    <a href="all-movies.html"><span class="nav-icon">🎬</span>All Movies</a>
+    <div class="drawer-div"></div>
+    <a href="genre.html"><span class="nav-icon">🎭</span>Genres</a>
+    <a href="language.html"><span class="nav-icon">🌐</span>Language</a>
+    <div class="drawer-div"></div>
+    <a href="contact.html"><span class="nav-icon">📧</span>Contact Us</a>
+    <a href="dmca.html"><span class="nav-icon">🛡️</span>DMCA</a>
+  </div>
+</nav>
+
+<!-- ══════════ HERO BANNER ══════════ -->
+<section class="hero" id="heroSection">
+  <img class="hero-img loading" id="heroImg" src="" alt="Featured Anime">
+  <div class="hero-grad"></div>
+  <div class="hero-content">
+    <span class="hero-tag" id="heroTag">Spotlight</span>
+    <h1 class="hero-title" id="heroTitle">Loading...</h1>
+    <div class="hero-meta" id="heroMeta"></div>
+    <p class="hero-desc" id="heroDesc"></p>
+    <div class="hero-btns">
+      <a class="btn-watch" id="heroWatchBtn" href="#">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        Watch Now
+      </a>
+      <a class="btn-detail" id="heroDetailBtn" href="#">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+        </svg>
+        Details
+      </a>
+    </div>
+  </div>
+  <div class="hero-dots" id="heroDots"></div>
+</section>
+
+<!-- ══════════ TRENDING ══════════ -->
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title">Trending</h2>
+    <a href="all-series.html" class="see-all">See All →</a>
+  </div>
+  <div class="anime-row" id="trendingRow"></div>
+</section>
+
+<!-- ══════════ LATEST HINDI DUBBED ══════════ -->
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title">Latest Hindi Dubbed</h2>
+    <a href="all-series.html" class="see-all">See All →</a>
+  </div>
+  <div class="anime-row" id="latestRow"></div>
+</section>
+
+<!-- ══════════ LATEST MOVIES ══════════ -->
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title">Latest Movies</h2>
+    <a href="all-movies.html" class="see-all">See All →</a>
+  </div>
+  <div class="anime-row" id="moviesRow"></div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="footer-links">
+    <a href="all-series.html">All Series</a>
+    <a href="all-movies.html">All Movies</a>
+    <a href="genre.html">Genres</a>
+    <a href="language.html">Language</a>
+    <a href="contact.html">Contact Us</a>
+    <a href="dmca.html">DMCA</a>
+  </div>
+  <p class="footer-copy"><strong>AniNova</strong> © 2026 &nbsp;·&nbsp; Watch Anime Online Free</p>
+</footer>
+
+<!-- ══════════ FIREBASE SDK ══════════ -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, query, where, orderBy, limit, getDocs, doc, getDoc }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  /* ── CONFIG — Fill your Firebase credentials ── */
+  const firebaseConfig = {
+    apiKey:            "AIzaSyDmg1xw9VXhszxm1IKmBKh24yQDDtSKoQ8",
+    authDomain:        "aninova-c1d69.firebaseapp.com",
+    projectId:         "aninova-c1d69",
+    storageBucket:     "aninova-c1d69.firebasestorage.app",
+    messagingSenderId: "1089254256286",
+    appId:             "1:1089254256286:web:7755ed1f346e0a0921958f"
+  };
+
+  const API_KEY  = 'ShadowT2025Xq7mK9pZ';
+  const API_BASE = 'https://shadowtoonhub.xyz/api/';
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+async function loadHeaderLogo(){
+  try{
+    const snap = await getDoc(doc(db,'settings','admin'));
+    const logo = snap.exists() ? snap.data().headerLogoUrl : '';
+    if(logo){
+      document.getElementById('siteLogo').src = logo;
+    }
+  }catch(e){
+    console.error('Logo load failed', e);
+  }
+}
+
+loadHeaderLogo();
+
+  /* ── HELPERS ── */
+  function toSlug(str) {
+    return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  function skeletons(n = 6) {
+    return Array(n).fill(0).map(() => `
+      <div class="skel-card">
+        <div class="skel skel-img"></div>
+        <div class="skel skel-txt"></div>
+      </div>`).join('');
+  }
+
+  function cardHTML(anime) {
+    const slug = toSlug(anime.title || '');
+    const type = (anime.type === 'movie') ? 'movie' : 'series';
+    const href = `${type}.html?id=${anime.id}&slug=${slug}`;
+    const img  = anime.cover_url || `https://placehold.co/140x210/0D1221/00BFFF?text=${encodeURIComponent(anime.title || '?')}`;
+    return `
+      <a class="card" href="${href}">
+        <img class="card-poster" src="${img}" alt="${anime.title || ''}" loading="lazy"
+             onerror="this.src='https://placehold.co/140x210/0D1221/8892A4?text=?'">
+        <p class="card-name">${anime.title || ''}</p>
+      </a>`;
+  }
+
+  /* ── HERO BANNER ── */
+  let heroItems  = [];
+  let heroIndex  = 0;
+  let heroTimer  = null;
+
+  function setHero(anime) {
+    const img   = document.getElementById('heroImg');
+    const title = document.getElementById('heroTitle');
+    const desc  = document.getElementById('heroDesc');
+    const meta  = document.getElementById('heroMeta');
+    const wBtn  = document.getElementById('heroWatchBtn');
+    const dBtn  = document.getElementById('heroDetailBtn');
+    const slug  = toSlug(anime.title || '');
+    const type  = (anime.type === 'movie') ? 'movie' : 'series';
+
+    img.classList.add('loading');
+    img.onload = () => img.classList.remove('loading');
+    img.src    = anime.banner_url || anime.cover_url || '';
+    img.alt    = anime.title || '';
+    title.textContent = anime.title || '';
+    desc.textContent  = anime.overview || '';
+
+    const rating  = anime.rating  ? `⭐ ${anime.rating}` : '';
+    const year    = anime.aired_from ? anime.aired_from.split('-')[0] : '';
+    const quality = anime.quality || '';
+    const lang    = anime.audio_lang || '';
+    meta.innerHTML = [rating, year, quality, lang]
+      .filter(Boolean)
+      .map(v => `<span class="hero-meta-badge">${v}</span>`)
+      .join('');
+
+    wBtn.href = (type === 'movie')
+      ? `watch-movie.html?id=${anime.id}&slug=${slug}`
+      : `watch.html?id=${anime.id}&slug=${slug}&s=1&ep=1`;
+    dBtn.href = `${type}.html?id=${anime.id}&slug=${slug}`;
+  }
+
+  function buildDots() {
+    const dots = document.getElementById('heroDots');
+    dots.innerHTML = heroItems.map((_, i) =>
+      `<button class="hero-dot${i === 0 ? ' active' : ''}" data-i="${i}" aria-label="Slide ${i+1}"></button>`
+    ).join('');
+    dots.querySelectorAll('.hero-dot').forEach(d => {
+      d.addEventListener('click', () => {
+        clearInterval(heroTimer);
+        heroIndex = +d.dataset.i;
+        showHero(heroIndex);
+        startHeroTimer();
+      });
+    });
+  }
+
+  function showHero(idx) {
+    heroIndex = idx;
+    setHero(heroItems[idx]);
+    document.querySelectorAll('.hero-dot').forEach((d, i) =>
+      d.classList.toggle('active', i === idx));
+  }
+
+  function startHeroTimer() {
+    heroTimer = setInterval(() => {
+      showHero((heroIndex + 1) % heroItems.length);
+    }, 5000);
+  }
+
+  /* ── LOAD FROM FIREBASE ── */
+  async function loadSection(rowId, conditions, limitCount = 12) {
+    document.getElementById(rowId).innerHTML = skeletons();
+    try {
+      let q = query(collection(db, 'anime'), ...conditions, limit(limitCount));
+      const snap = await getDocs(q);
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById(rowId).innerHTML = items.length
+        ? items.map(cardHTML).join('')
+        : '<p style="color:var(--muted);font-size:.8rem;padding:8px 0">No anime found.</p>';
+      return items;
+    } catch (e) {
+      console.error(rowId, e);
+      document.getElementById(rowId).innerHTML =
+        '<p style="color:var(--muted);font-size:.8rem;padding:8px 0">Failed to load.</p>';
+      return [];
+    }
+  }
+
+  async function init() {
+    /* Show skeletons immediately */
+    ['trendingRow', 'latestRow', 'moviesRow'].forEach(id => {
+      document.getElementById(id).innerHTML = skeletons();
+    });
+
+    /* Load Featured (hero banner) */
+    try {
+      const featQ  = query(collection(db, 'anime'), where('featured', '==', true), limit(5));
+      const featSnap = await getDocs(featQ);
+      heroItems = featSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (heroItems.length) {
+        showHero(0);
+        buildDots();
+        if (heroItems.length > 1) startHeroTimer();
+      }
+    } catch (e) { console.error('Hero:', e); }
+
+    /* Load rows in parallel */
+    await Promise.all([
+      loadSection('trendingRow',
+        [where('type', '==', 'series'), orderBy('added_at', 'desc')], 12),
+      loadSection('latestRow',
+        [where('audio_lang', '==', 'Hindi'), where('type', '==', 'series'), orderBy('added_at', 'desc')], 12),
+      loadSection('moviesRow',
+        [where('type', '==', 'movie'), orderBy('added_at', 'desc')], 12),
+    ]);
+  }
+
+  init();
+
+  /* ── DRAWER ── */
+  const drawer  = document.getElementById('drawer');
+  const overlay = document.getElementById('overlay');
+  const menuBtn = document.getElementById('menuBtn');
+  const closeBtn = document.getElementById('closeBtn');
+
+  function openDrawer()  {
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  menuBtn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  /* ── HEADER SCROLL ── */
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 10);
+  }, { passive: true });
+</script>
+</body>
+</html>
