@@ -18,7 +18,7 @@
       --muted:    #8892A4;
       --border:   #1A2035;
       --radius:   8px;
-      --hh:       58px;
+      --hh:       50px;
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -57,47 +57,23 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 16px 0 10px;
       transition: background 0.3s;
     }
 
     header.scrolled { background: rgba(7, 11, 20, 0.97); }
 
-    .logo {
-      font-family: 'Oxanium', sans-serif;
-      font-size: 1.35rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
+    .header-left {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
     }
 
-    .logo-icon {
-      width: 28px;
-      height: 28px;
-      background: var(--primary);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .header-logo-img {
+      height: 38px;
+      width: auto;
+      display: block;
     }
-
-    .logo-icon svg { width: 16px; height: 16px; fill: #000; }
-    .logo span { color: var(--primary); }
-
-#siteLogo{
-  height:48px;
-  width:auto;
-  display:block;
-  object-fit:contain;
-}
-
-@media (max-width:768px){
-  #siteLogo{
-    height:38px;
-  }
-}
 
     .header-right {
       display: flex;
@@ -134,18 +110,18 @@
 
     .drawer {
       position: fixed;
-      top: 0; right: -290px;
+      top: 0; left: -290px;
       width: 280px;
       height: 100dvh;
       background: var(--bg2);
-      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
       z-index: 201;
-      transition: right 0.3s cubic-bezier(.4,0,.2,1);
+      transition: left 0.3s cubic-bezier(.4,0,.2,1);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
     }
-    .drawer.open { right: 0; }
+    .drawer.open { left: 0; }
 
     .drawer-head {
       display: flex;
@@ -536,20 +512,27 @@
 
 <!-- ══════════ HEADER ══════════ -->
 <header id="header">
-<a href="index.html" class="logo">
-  <img id="siteLogo" src="" alt="AniNova">
-</a>
+  <div class="header-left">
+    <button class="icon-btn" id="menuBtn" aria-label="Open menu">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+    <a href="index.html" class="header-logo">
+      <img src="https://i.ibb.co/Xrh5jPPy/aninova-logo.png" alt="AniNova" class="header-logo-img">
+    </a>
+  </div>
   <div class="header-right">
     <a href="search.html" class="icon-btn" aria-label="Search">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
     </a>
-    <button class="icon-btn" id="menuBtn" aria-label="Open menu">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-        <path d="M4 6h16M4 12h16M4 18h16"/>
+    <a href="https://t.me/Aninova_updates" class="icon-btn" aria-label="Telegram" target="_blank" rel="noopener noreferrer">
+      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
       </svg>
-    </button>
+    </a>
   </div>
 </header>
 
@@ -649,8 +632,8 @@
 <!-- ══════════ FIREBASE SDK ══════════ -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, query, where, orderBy, limit, getDocs, doc, getDoc }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { getFirestore, collection, query, where, orderBy, limit, getDocs }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   /* ── CONFIG — Fill your Firebase credentials ── */
   const firebaseConfig = {
@@ -665,22 +648,8 @@ import { getFirestore, collection, query, where, orderBy, limit, getDocs, doc, g
   const API_KEY  = 'ShadowT2025Xq7mK9pZ';
   const API_BASE = 'https://shadowtoonhub.xyz/api/';
 
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-
-async function loadHeaderLogo(){
-  try{
-    const snap = await getDoc(doc(db,'settings','admin'));
-    const logo = snap.exists() ? snap.data().headerLogoUrl : '';
-    if(logo){
-      document.getElementById('siteLogo').src = logo;
-    }
-  }catch(e){
-    console.error('Logo load failed', e);
-  }
-}
-
-loadHeaderLogo();
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
 
   /* ── HELPERS ── */
   function toSlug(str) {
