@@ -270,10 +270,9 @@
     <div class="section" id="sec-settings">
       <div class="box">
         <div class="box-title">⚙️ Change Credentials</div>
-<div class="form-row col"><label class="lbl">New Username</label><input class="inp" id="newUser" placeholder="New username"></div>
-<div class="form-row col"><label class="lbl">New Password</label><input class="inp" type="password" id="newPass" placeholder="New password"></div>
-<div class="form-row col"><label class="lbl">Header Logo URL (ImgBB Direct Link)</label><input class="inp" id="headerLogoUrl" placeholder="https://i.ibb.co/.../logo.png"></div>
-<button class="btn btn-primary" id="saveSettingsBtn">💾 Save Changes</button>
+        <div class="form-row col"><label class="lbl">New Username</label><input class="inp" id="newUser" placeholder="New username"></div>
+        <div class="form-row col"><label class="lbl">New Password</label><input class="inp" type="password" id="newPass" placeholder="New password"></div>
+        <button class="btn btn-primary" id="saveSettingsBtn">💾 Save Changes</button>
       </div>
     </div>
 
@@ -741,18 +740,13 @@
     } catch(e) { grid.innerHTML = '<div class="empty" style="width:100%">Error.</div>'; }
   });
 
-document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
-  const newUser = document.getElementById('newUser').value.trim();
-  const newPass = document.getElementById('newPass').value.trim();
-  const headerLogoUrl = document.getElementById('headerLogoUrl').value.trim();
-  if (!newUser || !newPass) { toast('Fill both fields!','error'); return; }
+  document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+    const newUser = document.getElementById('newUser').value.trim();
+    const newPass = document.getElementById('newPass').value.trim();
+    if (!newUser || !newPass) { toast('Fill both fields!','error'); return; }
     try {
-await updateDoc(doc(db,'settings','admin'), {
-  username:newUser,
-  password:newPass,
-  headerLogoUrl
-});
-toast('Updated!','success');
+      await updateDoc(doc(db,'settings','admin'), { username:newUser, password:newPass });
+      toast('Updated!','success');
       sessionStorage.setItem('aninova_admin_user', newUser);
       document.getElementById('adminBadge').textContent = newUser;
       document.getElementById('newUser').value = '';
