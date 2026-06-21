@@ -589,31 +589,40 @@
   <div class="hero-dots" id="heroDots"></div>
 </section>
 
-<!-- ══════════ TRENDING ══════════ -->
+<!-- ══════════ RECENTLY ADDED ══════════ -->
 <section class="section">
   <div class="section-head">
-    <h2 class="section-title">Trending</h2>
+    <h2 class="section-title">Recently Added</h2>
     <a href="all-series.html" class="see-all">See All →</a>
   </div>
-  <div class="anime-row" id="trendingRow"></div>
+  <div class="anime-row" id="recentAddedRow"></div>
 </section>
 
-<!-- ══════════ LATEST HINDI DUBBED ══════════ -->
+<!-- ══════════ MOST POPULAR SERIES ══════════ -->
 <section class="section">
   <div class="section-head">
-    <h2 class="section-title">Latest Hindi Dubbed</h2>
+    <h2 class="section-title">Most Popular Series</h2>
     <a href="all-series.html" class="see-all">See All →</a>
   </div>
-  <div class="anime-row" id="latestRow"></div>
+  <div class="anime-row" id="popularSeriesRow"></div>
 </section>
 
-<!-- ══════════ LATEST MOVIES ══════════ -->
+<!-- ══════════ TOP MOVIES ══════════ -->
 <section class="section">
   <div class="section-head">
-    <h2 class="section-title">Latest Movies</h2>
+    <h2 class="section-title">Top Movies</h2>
     <a href="all-movies.html" class="see-all">See All →</a>
   </div>
-  <div class="anime-row" id="moviesRow"></div>
+  <div class="anime-row" id="topMoviesRow"></div>
+</section>
+
+<!-- ══════════ NEW THIS YEAR ══════════ -->
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title">New This Year</h2>
+    <a href="all-series.html" class="see-all">See All →</a>
+  </div>
+  <div class="anime-row" id="newYearRow"></div>
 </section>
 
 <!-- ══════════ FOOTER ══════════ -->
@@ -632,7 +641,7 @@
 <!-- ══════════ FIREBASE SDK ══════════ -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, collection, query, where, orderBy, limit, getDocs }
+  import { getFirestore, collection, query, where, orderBy, limit, getDocs, doc, getDoc }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   /* ── CONFIG — Fill your Firebase credentials ── */
@@ -761,9 +770,68 @@
     }
   }
 
+  /* ── NEW THIS YEAR (automatic — latest year present in data) ── */
+  async function loadNewThisYear(rowId, limitCount = 20) {
+    document.getElementById(rowId).innerHTML = skeletons();
+    try {
+      const latestQ = query(collection(db, 'anime'), orderBy('aired_from', 'desc'), limit(1));
+      const latestSnap = await getDocs(latestQ);
+      if (latestSnap.empty) {
+        document.getElementById(rowId).innerHTML =
+          '<p style="color:var(--muted);font-size:.8rem;padding:8px 0">No anime found.</p>';
+        return [];
+      }
+      const latestYear = latestSnap.docs[0].data().aired_from.split('-')[0];
+      const yearQ = query(
+        collection(db, 'anime'),
+        where('aired_from', '>=', `${latestYear}-01-01`),
+        where('aired_from', '<=', `${latestYear}-12-31`),
+        orderBy('aired_from', 'desc'),
+        limit(limitCount)
+      );
+      const snap = await getDocs(yearQ);
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById(rowId).innerHTML = items.length
+        ? items.map(cardHTML).join('')
+        : '<p style="color:var(--muted);font-size:.8rem;padding:8px 0">No anime found.</p>';
+      return items;
+    } catch (e) {
+      console.error(rowId, e);
+      document.getElementById(rowId).innerHTML =
+        '<p style="color:var(--muted);font-size:.8rem;padding:8px 0">Failed to load.</p>';
+      return [];
+    }
+  }
+
+  /* ── MANUAL SECTIONS (Most Popular Series / Top Movies) ── */
+  async function loadManualSection(rowId, docId, limitCount = 20) {
+    document.getElementById(rowId).innerHTML = skeletons();
+    try {
+      const secSnap = await getDoc(doc(db, 'manual_sections', docId));
+      const order = secSnap.exists() ? (secSnap.data().order || []) : [];
+      if (!order.length) {
+        document.getElementById(rowId).innerHTML =
+          '<p style="color:var(--muted);font-size:.8rem;padding:8px 0">No anime found.</p>';
+        return [];
+      }
+      const idsToFetch = order.slice(0, limitCount);
+      const docs = await Promise.all(idsToFetch.map(id => getDoc(doc(db, 'anime', id))));
+      const items = docs.filter(d => d.exists()).map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById(rowId).innerHTML = items.length
+        ? items.map(cardHTML).join('')
+        : '<p style="color:var(--muted);font-size:.8rem;padding:8px 0">No anime found.</p>';
+      return items;
+    } catch (e) {
+      console.error(rowId, e);
+      document.getElementById(rowId).innerHTML =
+        '<p style="color:var(--muted);font-size:.8rem;padding:8px 0">Failed to load.</p>';
+      return [];
+    }
+  }
+
   async function init() {
     /* Show skeletons immediately */
-    ['trendingRow', 'latestRow', 'moviesRow'].forEach(id => {
+    ['recentAddedRow', 'popularSeriesRow', 'topMoviesRow', 'newYearRow'].forEach(id => {
       document.getElementById(id).innerHTML = skeletons();
     });
 
@@ -781,12 +849,10 @@
 
     /* Load rows in parallel */
     await Promise.all([
-      loadSection('trendingRow',
-        [where('type', '==', 'series'), orderBy('added_at', 'desc')], 12),
-      loadSection('latestRow',
-        [where('audio_lang', '==', 'Hindi'), where('type', '==', 'series'), orderBy('added_at', 'desc')], 12),
-      loadSection('moviesRow',
-        [where('type', '==', 'movie'), orderBy('added_at', 'desc')], 12),
+      loadSection('recentAddedRow', [orderBy('added_at', 'desc')], 20),
+      loadManualSection('popularSeriesRow', 'popular_series', 20),
+      loadManualSection('topMoviesRow', 'top_movies', 20),
+      loadNewThisYear('newYearRow', 20),
     ]);
   }
 
