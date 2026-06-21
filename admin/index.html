@@ -217,16 +217,36 @@
     <!-- SERIES -->
     <div class="section" id="sec-series">
       <div class="box">
-        <div class="box-title">📺 All Series <span id="seriesCount" style="color:var(--muted);font-size:.78rem;font-weight:400"></span></div>
+        <div class="box-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>📺 All Series <span id="seriesCount" style="color:var(--muted);font-size:.78rem;font-weight:400"></span></span>
+          <button class="btn btn-outline btn-sm" onclick="copyTitles('series')">📋 Copy Titles</button>
+        </div>
         <div class="anime-list" id="seriesList"><div class="empty"><div class="empty-icon">📺</div>No series yet.</div></div>
+      </div>
+      <div class="box">
+        <div class="box-title">🔥 Most Popular Series</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:10px;">AI se mila ranked list yahan paste karo (comma-separated), phir Save karo. Sirf pasted titles homepage par dikhenge, usi order me.</p>
+        <textarea class="inp" id="popularSeriesInput" rows="3" placeholder="Demon Slayer, Jujutsu Kaisen, Naruto, ..."></textarea>
+        <button class="btn btn-primary" style="margin-top:8px" onclick="saveManualSection('popular_series')">💾 Save Order</button>
+        <div id="popularSeriesPreview" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;"></div>
       </div>
     </div>
 
     <!-- MOVIES -->
     <div class="section" id="sec-movies">
       <div class="box">
-        <div class="box-title">🎬 All Movies <span id="moviesCount" style="color:var(--muted);font-size:.78rem;font-weight:400"></span></div>
+        <div class="box-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>🎬 All Movies <span id="moviesCount" style="color:var(--muted);font-size:.78rem;font-weight:400"></span></span>
+          <button class="btn btn-outline btn-sm" onclick="copyTitles('movies')">📋 Copy Titles</button>
+        </div>
         <div class="anime-list" id="moviesList"><div class="empty"><div class="empty-icon">🎬</div>No movies yet.</div></div>
+      </div>
+      <div class="box">
+        <div class="box-title">🏆 Top Movies</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:10px;">AI se mila ranked list yahan paste karo (comma-separated), phir Save karo. Sirf pasted titles homepage par dikhenge, usi order me.</p>
+        <textarea class="inp" id="topMoviesInput" rows="3" placeholder="Your Name, Spirited Away, Suzume, ..."></textarea>
+        <button class="btn btn-primary" style="margin-top:8px" onclick="saveManualSection('top_movies')">💾 Save Order</button>
+        <div id="topMoviesPreview" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;"></div>
       </div>
     </div>
 
@@ -283,7 +303,7 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore,collection,doc,getDocs,getDoc,addDoc,updateDoc,deleteDoc,query,where,orderBy,limit,serverTimestamp }
+  import { getFirestore,collection,doc,getDocs,getDoc,addDoc,updateDoc,deleteDoc,setDoc,query,where,orderBy,limit,serverTimestamp }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   const firebaseConfig = {
@@ -368,6 +388,8 @@
   }
 
   let selectedAnime = null;
+  let currentSeriesList = [];
+  let currentMoviesList = [];
   const searchInput = document.getElementById('searchInput');
   const searchBtn   = document.getElementById('searchBtn');
   const searchResults = document.getElementById('searchResults');
@@ -460,8 +482,10 @@
     try {
       const snap = await getDocs(query(collection(db,'anime'), where('type','==','series')));
       const items = snap.docs.map(d => ({id:d.id,...d.data()}));
+      currentSeriesList = items;
       document.getElementById('seriesCount').textContent = `(${items.length})`;
       list.innerHTML = items.length ? items.map(animeRowHTML).join('') : '<div class="empty"><div class="empty-icon">📺</div>No series yet.</div>';
+      loadManualPreview('popular_series');
     } catch(e) { list.innerHTML = '<div class="empty">Error loading.</div>'; }
   }
 
@@ -471,9 +495,59 @@
     try {
       const snap = await getDocs(query(collection(db,'anime'), where('type','==','movie')));
       const items = snap.docs.map(d => ({id:d.id,...d.data()}));
+      currentMoviesList = items;
       document.getElementById('moviesCount').textContent = `(${items.length})`;
       list.innerHTML = items.length ? items.map(animeRowHTML).join('') : '<div class="empty"><div class="empty-icon">🎬</div>No movies yet.</div>';
+      loadManualPreview('top_movies');
     } catch(e) { list.innerHTML = '<div class="empty">Error loading.</div>'; }
+  }
+
+  window.copyTitles = function(type) {
+    const arr = type === 'series' ? currentSeriesList : currentMoviesList;
+    if (!arr.length) { toast('No items to copy.', 'error'); return; }
+    const text = arr.map(a => a.title).join(', ');
+    navigator.clipboard.writeText(text)
+      .then(() => toast(`${arr.length} titles copied!`, 'success'))
+      .catch(() => toast('Copy failed.', 'error'));
+  };
+
+  window.saveManualSection = async function(type) {
+    const isPopular   = type === 'popular_series';
+    const textareaId  = isPopular ? 'popularSeriesInput' : 'topMoviesInput';
+    const sourceList  = isPopular ? currentSeriesList : currentMoviesList;
+    const raw = document.getElementById(textareaId).value.trim();
+    if (!raw) { toast('Paste a list first.', 'error'); return; }
+    const titles = raw.split(',').map(t => t.trim()).filter(Boolean);
+    const orderedIds = [];
+    const notFound = [];
+    titles.forEach(t => {
+      const match = sourceList.find(a => (a.title || '').toLowerCase() === t.toLowerCase());
+      if (match) orderedIds.push(match.id); else notFound.push(t);
+    });
+    if (!orderedIds.length) { toast('No titles matched! Check spelling.', 'error'); return; }
+    try {
+      await setDoc(doc(db, 'manual_sections', type), { order: orderedIds, updated_at: serverTimestamp() });
+      toast(`Saved! ${orderedIds.length} matched${notFound.length ? ', ' + notFound.length + ' not found' : ''}.`, 'success');
+      if (notFound.length) console.warn('Titles not matched:', notFound);
+      document.getElementById(textareaId).value = '';
+      loadManualPreview(type);
+    } catch (e) { toast('Save failed.', 'error'); console.error(e); }
+  };
+
+  async function loadManualPreview(type) {
+    const isPopular = type === 'popular_series';
+    const wrap = document.getElementById(isPopular ? 'popularSeriesPreview' : 'topMoviesPreview');
+    const sourceList = isPopular ? currentSeriesList : currentMoviesList;
+    if (!wrap) return;
+    try {
+      const snap = await getDoc(doc(db, 'manual_sections', type));
+      const order = snap.exists() ? (snap.data().order || []) : [];
+      if (!order.length) { wrap.innerHTML = '<span style="color:var(--muted);font-size:.78rem;">No order saved yet.</span>'; return; }
+      wrap.innerHTML = order.map((id, i) => {
+        const a = sourceList.find(x => x.id === id);
+        return `<span class="tag">${i + 1}. ${a ? a.title : '(removed)'}</span>`;
+      }).join('');
+    } catch (e) { wrap.innerHTML = '<span style="color:var(--error);font-size:.78rem;">Error loading.</span>'; }
   }
 
   window.deleteAnime = async function(id) {
