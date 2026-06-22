@@ -34,7 +34,8 @@
     .page-wrap{padding:28px 16px;max-width:680px;margin:0 auto}
     .page-icon{font-size:2.5rem;margin-bottom:10px;text-align:center}
     .page-title{font-family:'Oxanium',sans-serif;font-size:1.3rem;font-weight:800;text-align:center;margin-bottom:6px}
-    .page-sub{font-size:.85rem;color:var(--muted);text-align:center;margin-bottom:28px;line-height:1.6}
+    .page-sub{font-size:.85rem;color:var(--muted);text-align:center;margin-bottom:6px;line-height:1.6}
+    .page-updated{font-size:.75rem;color:var(--muted);text-align:center;margin-bottom:28px;opacity:.6}
 
     .dmca-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
     .dmca-section h2{font-family:'Oxanium',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
@@ -45,7 +46,10 @@
 
     .notice-box{background:rgba(0,191,255,.06);border:1px solid rgba(0,191,255,.2);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;font-size:.82rem;color:var(--primary);line-height:1.6}
 
-    .btn-contact{display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:#000;font-weight:700;font-size:.88rem;padding:11px 24px;border-radius:var(--radius);margin-top:8px;transition:opacity .2s}
+    .contact-detail{margin-top:10px;font-size:.84rem;color:rgba(255,255,255,.7);line-height:1.9}
+    .contact-detail span{color:var(--primary);font-weight:600}
+
+    .btn-contact{display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:#000;font-weight:700;font-size:.88rem;padding:11px 24px;border-radius:var(--radius);margin-top:12px;transition:opacity .2s}
     .btn-contact:hover{opacity:.88}
 
     footer{margin-top:40px;padding:20px 16px 32px;border-top:1px solid var(--border)}
@@ -77,6 +81,7 @@
     </a>
   </div>
 </header>
+
 <div class="overlay" id="overlay"></div>
 <nav class="drawer" id="drawer">
   <div class="drawer-head"><span class="drawer-logo">Ani<span>Nova</span></span><button class="icon-btn" id="closeBtn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
@@ -99,40 +104,53 @@
   <div class="page-icon">🛡️</div>
   <div class="page-title">DMCA Policy</div>
   <p class="page-sub">AniNova respects intellectual property rights and takes copyright infringement seriously.</p>
+  <p class="page-updated">Last Updated: June 2026</p>
 
   <div class="notice-box">
-    ℹ️ AniNova does not host any video files on its servers. All content is embedded from third-party sources. We act as an index and search tool only.
+    ℹ️ AniNova does not host, upload, store, or distribute any video files on its own servers. All content is embedded from third-party sources that are publicly accessible on the internet.
   </div>
 
   <div class="dmca-section">
-    <h2>📌 Our Policy</h2>
-    <p>AniNova is a free anime streaming index website. We do not upload, store, or host any video content on our servers. All videos are hosted by third-party services and are embedded via external links.</p>
-    <p>We respect the intellectual property rights of all content creators and rights holders.</p>
+    <h2>📌 Content Disclaimer</h2>
+    <p>AniNova does not host, upload, store, or distribute any anime episodes, anime movies, or video files on its own servers. All media content available through AniNova is embedded from third-party sources that are publicly accessible on the internet.</p>
+    <p>AniNova acts solely as an indexing and discovery platform that helps users find anime content available from external providers.</p>
   </div>
 
   <div class="dmca-section">
-    <h2>📩 How to Submit a DMCA Notice</h2>
-    <p>If you are a copyright owner and believe that content on AniNova infringes your rights, please send us a DMCA takedown notice with the following information:</p>
+    <h2>📩 Copyright Infringement Notification</h2>
+    <p>If you are a copyright owner or an authorized representative and believe that any content accessible through AniNova infringes your copyright, you may submit a DMCA takedown request.</p>
+    <p>Please include the following information in your notice:</p>
     <ul>
       <li>Your full name and contact information</li>
-      <li>Description of the copyrighted work</li>
-      <li>URL(s) of the infringing content on our site</li>
-      <li>A statement that you have a good faith belief the use is not authorized</li>
+      <li>Identification of the copyrighted work</li>
+      <li>The URL(s) on AniNova where the allegedly infringing content appears</li>
+      <li>A statement that you have a good-faith belief that the use is not authorized by the copyright owner, agent, or applicable law</li>
+      <li>A statement that the information provided is accurate</li>
       <li>Your electronic or physical signature</li>
     </ul>
   </div>
 
   <div class="dmca-section">
-    <h2>⚡ Response Time</h2>
-    <p>We will review and respond to all valid DMCA notices within 48–72 hours. Upon verification, the infringing content will be removed promptly.</p>
+    <h2>⚡ Our Response</h2>
+    <p>Upon receiving a valid DMCA notice, we will review the request and take appropriate action. Verified infringing content may be removed, disabled, or de-indexed from AniNova within 24 hours whenever reasonably possible.</p>
   </div>
 
   <div class="dmca-section">
-    <h2>📧 Contact for DMCA</h2>
-    <p>Send your DMCA notice to our email. Please use "DMCA Takedown" as the subject line.</p>
-    <a class="btn-contact" href="mailto:dmca@aninova.com">
-      📧 dmca@aninova.com
+    <h2>™️ Trademarks &amp; Ownership</h2>
+    <p>AniNova does not claim ownership of any third-party trademarks, logos, anime titles, images, or copyrighted materials that may appear on the website. All rights belong to their respective owners.</p>
+  </div>
+
+  <div class="dmca-section">
+    <h2>📧 Contact Us</h2>
+    <p>For copyright-related concerns or DMCA takedown requests, please contact us at:</p>
+    <div class="contact-detail">
+      📧 Email: <span>aninova500@gmail.com</span><br>
+      📝 Subject Line: <span>DMCA Takedown Request</span>
+    </div>
+    <a class="btn-contact" href="mailto:aninova500@gmail.com?subject=DMCA Takedown Request">
+      📧 Send DMCA Notice
     </a>
+    <p style="margin-top:12px;">We appreciate the cooperation of copyright owners and will make reasonable efforts to resolve legitimate concerns promptly.</p>
   </div>
 </div>
 
