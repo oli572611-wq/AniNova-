@@ -463,7 +463,7 @@
       genres, overview: document.getElementById('f-overview').value.trim(),
       cover_url: document.getElementById('f-cover').value.trim(),
       banner_url: document.getElementById('f-banner').value.trim(),
-      featured: false, added_at: serverTimestamp(),
+      featured: false, added_at: serverTimestamp(), last_updated: serverTimestamp(),
     };
     if (!data.title) { toast('Please enter a title!', 'error'); btn.disabled=false; btn.textContent='💾 Save to Firebase'; return; }
     try {
@@ -789,6 +789,11 @@
         episode_title: watchData.episode?.episode_title||'',
         servers: watchData.servers||[], nav: watchData.navigation||{},
         added_at: serverTimestamp(),
+      });
+      await updateDoc(doc(db,'anime',fbId), {
+        last_updated: serverTimestamp(),
+        last_ep_num: Number(epNum),
+        last_season_num: Number(season),
       });
       toast(`S${season} E${epNum} published!`,'success');
       document.getElementById('epPreview').style.display = 'none';
