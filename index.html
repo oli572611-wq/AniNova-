@@ -849,7 +849,7 @@
 
     /* Load rows in parallel */
     await Promise.all([
-      loadSection('recentAddedRow', [orderBy('added_at', 'desc')], 20),
+      loadSection('recentAddedRow', [orderBy('last_updated', 'desc')], 20),
       loadManualSection('popularSeriesRow', 'popular_series', 20),
       loadManualSection('topMoviesRow', 'top_movies', 20),
       loadNewThisYear('newYearRow', 20),
